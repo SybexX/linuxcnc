@@ -2124,11 +2124,11 @@ class gmoccapy(object):
                        "Diameter", "Front angle", "Back angle", "Orientation", ";1"]
         toolpage = self.widgets.tooledit1
         toolview = toolpage.view1
-        model, row = toolview.get_selection().get_selected()
+        model, treeiter = toolview.get_selection().get_selected()
         value = self.dialogs.entry_dialog(self,
-                                    data=model[row][col],
+                                    data=model[treeiter][col],
                                     header=_("Enter value"),
-                                    label=_("Tool") + f" {model[row][1]}, {captations[col]}:",
+                                    label=_("Tool") + f" {model[treeiter][1]}, {captations[col]}:",
                                     integer=col in [1,2,15])
         if value == "ERROR":
             LOG.debug("conversion error")
@@ -2137,16 +2137,17 @@ class gmoccapy(object):
         elif value == "CANCEL":
             pass
         else:
-            store = toolpage.wTree.get_object("liststore1")
-            if col in [1,2,15]:
-                store[row][col] = value
-            else:
-                store[row][col] = f"{value:11.4f}"
+            path = model.get_path(treeiter)
+            row = path.get_indices()[0]
+            # Clicking on a cell emits 'editing-started' which leads to the evaluation of the text in edit mode.
+            # To use the return value of the calculator, it must be pretended that there is no editable (=no edit mode).
+            self.widgets.tooledit1.editable = None
+            self.widgets.tooledit1.validate_input(row, f"{value:11.4f}", col)
             self.widgets.tooledit1.edited = True
         # this is needed to get offsetview out of editing mode
         GLib.timeout_add(50,
                      toolview.set_cursor,
-                     toolpage.model.get_path(row),
+                     toolpage.model.get_path(treeiter),
                      toolview.get_columns()[0],
                      True)
 
