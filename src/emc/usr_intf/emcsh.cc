@@ -387,39 +387,316 @@ static int emc_plat(ClientData /*clientdata*/,
     return TCL_ERROR;
 }
 
+//
+// Helper function to test ini file object and correct number of object
+// arguments.
+//
+static bool test_ini_args(Tcl_Interp *interp, const IniFile &inifile, int objc, const char *pfx)
+{
+    if (objc < 3 || objc > 4) {
+        Tcl_SetObjResult(interp, Tcl_ObjPrintf("%s: need 'variable' and 'section' arguments (and optional default)", pfx));
+        return false;
+    }
+    if (!inifile) {
+        Tcl_SetObjResult(interp, Tcl_ObjPrintf("%s: failed to open ini-file", pfx));
+        return false;
+    }
+    return true;
+}
+
+//
+// emc_ini "VARIABLE" "SECTION" ["DEFAULT"]
+// Return the string value of [SECTION]VARIABLE
+// Returns an empty string if not found and no default is provided
+//
 static int emc_ini(ClientData /*clientdata*/,
 		   Tcl_Interp * interp, int objc, Tcl_Obj * CONST objv[])
 {
     IniFile inifile(emc_inifile);
-    const char *varstr, *secstr, *defaultstr;
-    defaultstr = 0;
+    const char *varstr, *secstr;
 
-    if (objc != 3 && objc != 4) {
-	setresult(interp,"emc_ini: need 'var' and 'section'");
+    if (!test_ini_args(interp, inifile, objc, "emc_ini"))
 	return TCL_ERROR;
-    }
-    if (!inifile) {
-	setresult(interp, "emc_ini: failed to open ini-file'");
-	return TCL_OK;
-    }
 
     varstr = Tcl_GetStringFromObj(objv[1], 0);
     secstr = Tcl_GetStringFromObj(objv[2], 0);
 
-    if (objc == 4) {
-	defaultstr = Tcl_GetStringFromObj(objv[3], 0);
+    if (auto inival = inifile.findString(varstr, secstr)) {
+        setresult(interp, inival->c_str());
+    } else {
+        const char *defaultstr = NULL;
+        if (4 == objc)
+            defaultstr = Tcl_GetStringFromObj(objv[3], 0);
+
+	if (NULL != defaultstr)
+	    setresult(interp, defaultstr);
+        else
+	    setresult(interp, "");
+    }
+    return TCL_OK;
+}
+
+//
+// emc_ini_real "VARIABLE" "SECTION" [<real>]
+// Return the double value of [SECTION]VARIABLE
+// Returns an error if not found and no default is provided
+//
+static int emc_ini_real(ClientData /*clientdata*/,
+		   Tcl_Interp * interp, int objc, Tcl_Obj * CONST objv[])
+{
+    IniFile inifile(emc_inifile);
+    const char *varstr, *secstr;
+
+    if (!test_ini_args(interp, inifile, objc, "emc_ini_real"))
+        return TCL_ERROR;
+
+    varstr = Tcl_GetStringFromObj(objv[1], 0);
+    secstr = Tcl_GetStringFromObj(objv[2], 0);
+
+    if (auto inival = inifile.findReal(varstr, secstr)) {
+        Tcl_SetObjResult(interp, Tcl_NewDoubleObj(*inival));
+    } else {
+        if (4 == objc)
+            Tcl_SetObjResult(interp, objv[3]);
+        else
+            return TCL_ERROR;
     }
 
-    auto inistring = inifile.findString(varstr, secstr);
-    if (!inistring) {
-	if (defaultstr != 0) {
-	    setresult(interp,(char *) defaultstr);
-	}
-	return TCL_OK;
+    return TCL_OK;
+}
+
+//
+// emc_ini_int "VARIABLE" "SECTION" [<int>]
+// Return the integer value of [SECTION]VARIABLE
+// Returns an error if not found and no default is provided
+//
+static int emc_ini_int(ClientData /*clientdata*/,
+		   Tcl_Interp * interp, int objc, Tcl_Obj * CONST objv[])
+{
+    IniFile inifile(emc_inifile);
+    const char *varstr, *secstr;
+
+    if (!test_ini_args(interp, inifile, objc, "emc_ini_int"))
+        return TCL_ERROR;
+
+    varstr = Tcl_GetStringFromObj(objv[1], 0);
+    secstr = Tcl_GetStringFromObj(objv[2], 0);
+
+    if (auto inival = inifile.findInt(varstr, secstr)) {
+        Tcl_SetObjResult(interp, Tcl_NewIntObj(*inival));
+    } else {
+        if (4 == objc)
+            Tcl_SetObjResult(interp, objv[3]);
+        else
+            return TCL_ERROR;
     }
 
-    setresult(interp, inistring->c_str());
+    return TCL_OK;
+}
 
+//
+// emc_ini_wideint "VARIABLE" "SECTION" [<wideint>]
+// Return the wideint value of [SECTION]VARIABLE
+// Returns an error if not found and no default is provided
+//
+static int emc_ini_wideint(ClientData /*clientdata*/,
+		   Tcl_Interp * interp, int objc, Tcl_Obj * CONST objv[])
+{
+    IniFile inifile(emc_inifile);
+    const char *varstr, *secstr;
+
+    if (!test_ini_args(interp, inifile, objc, "emc_ini_wideint"))
+        return TCL_ERROR;
+
+    varstr = Tcl_GetStringFromObj(objv[1], 0);
+    secstr = Tcl_GetStringFromObj(objv[2], 0);
+
+    if (auto inival = inifile.findSInt(varstr, secstr)) {
+        Tcl_SetObjResult(interp, Tcl_NewWideIntObj(*inival));
+    } else {
+        if (4 == objc)
+            Tcl_SetObjResult(interp, objv[3]);
+        else
+            return TCL_ERROR;
+    }
+
+    return TCL_OK;
+}
+
+//
+// emc_ini_bool "VARIABLE" "SECTION" [<bool>]
+// Return the boolean value of [SECTION]VARIABLE
+// Returns an error if not found and no default is provided
+//
+static int emc_ini_bool(ClientData /*clientdata*/,
+		   Tcl_Interp * interp, int objc, Tcl_Obj * CONST objv[])
+{
+    IniFile inifile(emc_inifile);
+    const char *varstr, *secstr;
+
+    if (!test_ini_args(interp, inifile, objc, "emc_ini_bool"))
+        return TCL_ERROR;
+
+    varstr = Tcl_GetStringFromObj(objv[1], 0);
+    secstr = Tcl_GetStringFromObj(objv[2], 0);
+
+    if (auto inival = inifile.findBool(varstr, secstr)) {
+        Tcl_SetObjResult(interp, Tcl_NewBooleanObj(*inival));
+    } else {
+        if (4 == objc)
+            Tcl_SetObjResult(interp, objv[3]);
+        else
+            return TCL_ERROR;
+    }
+
+    return TCL_OK;
+}
+
+//
+// emc_ini_sections
+// Return a list of section names
+// Returns an empty list if none found or the ini-file is invalid
+//
+static int emc_ini_sections(ClientData /*clientdata*/,
+		   Tcl_Interp * interp, int objc, Tcl_Obj * CONST objv[])
+{
+    (void)objv;
+    if (objc > 1) {
+        setresult(interp, "emc_ini_sections: no arguments supported");
+        return TCL_ERROR;
+    }
+
+    Tcl_Obj *list = Tcl_NewListObj(32, NULL);
+    if (NULL == list) {
+        setresult(interp, "emc_ini_sections: failed to create list object");
+        return TCL_ERROR;
+    }
+
+    IniFile inifile(emc_inifile);
+    if (!inifile) {
+        // Simply return empty list on ini-file read error
+        Tcl_SetObjResult(interp, list);
+        return TCL_OK;
+    }
+
+    // Append each section name to the list
+    for (auto const &sec : inifile.findSections()) {
+        Tcl_Obj *str = Tcl_NewStringObj(sec.c_str(), -1);
+        if (NULL == str) {
+            setresult(interp, "emc_ini_sections: failed to create string object");
+            return TCL_ERROR;
+        }
+        Tcl_ListObjAppendElement(interp, list, str);
+    }
+    Tcl_SetObjResult(interp, list);
+    return TCL_OK;
+}
+
+//
+// emc_ini_variables "SECTION"
+// Return a list of variables with value from named section
+// Returns an empty list if section is not found or the ini-file is invalid
+//
+static int emc_ini_variables(ClientData /*clientdata*/,
+		   Tcl_Interp * interp, int objc, Tcl_Obj * CONST objv[])
+{
+    if (2 != objc) {
+        setresult(interp, "emc_ini_variables: section argument missing or too many arguments");
+        return TCL_ERROR;
+    }
+
+    Tcl_Obj *list = Tcl_NewListObj(32, NULL);
+    if (NULL == list) {
+        setresult(interp, "emc_ini_variables: failed to create list object");
+        return TCL_ERROR;
+    }
+
+    IniFile inifile(emc_inifile);
+    if (!inifile) {
+        // Simply return empty list on ini-file read error
+        Tcl_SetObjResult(interp, list);
+        return TCL_OK;
+    }
+
+    const char *section = Tcl_GetStringFromObj(objv[1], 0);
+
+    // Append each variable and value to the list
+    for (auto const &var : inifile.findVariables(section)) {
+        Tcl_Obj *varval[2] = {
+            Tcl_NewStringObj(var.first.c_str(), -1),  // name
+            Tcl_NewStringObj(var.second.c_str(), -1)  // value
+        };
+        if (NULL == varval[0] || NULL == varval[1]) {
+            setresult(interp, "emc_ini_variables: failed to create string object(s)");
+            return TCL_ERROR;
+        }
+        Tcl_Obj *l = Tcl_NewListObj(2, varval);
+        if (NULL == l) {
+            setresult(interp, "emc_ini_variables: failed to create list content object");
+            return TCL_ERROR;
+        }
+        Tcl_ListObjAppendElement(interp, list, l);
+    }
+    Tcl_SetObjResult(interp, list);
+    return TCL_OK;
+}
+
+//
+// emc_ini_filename
+// Return the INI filename used
+//
+static int emc_ini_filename(ClientData /*clientdata*/,
+		   Tcl_Interp * interp, int objc, Tcl_Obj * CONST objv[])
+{
+    (void)objv;
+    if (objc > 1) {
+        setresult(interp, "emc_ini_filename: no arguments supported");
+        return TCL_ERROR;
+    }
+
+    setresult(interp, emc_inifile);
+    return TCL_OK;
+}
+
+//
+// emc_ini_load "inifilename"
+// Loads the specified INI-file and sets the internal static name 'emc_inifile'
+// if the load was successful.
+// Return true is the INI-file was read successfully or false otherwise.
+//
+// Note: This hack is only required to support the 'parse_ini' call from Tcl
+// code with a different filename than the real ini-file. This happens when no
+// 'emc_init -ini fname' is issued. This is the case for the twopass tests.
+//
+static int emc_ini_load(ClientData /*clientdata*/,
+		   Tcl_Interp * interp, int objc, Tcl_Obj * CONST objv[])
+{
+    if (2 != objc) {
+        setresult(interp, "emc_ini_load: needs exactly one filename argument");
+        return TCL_ERROR;
+    }
+
+    const char *fname = Tcl_GetStringFromObj(objv[1], 0);
+    if (!fname) {
+        setresult(interp, "emc_ini_load: failed to read filename argument");
+        return TCL_ERROR;
+    }
+
+    IniFile inifile(fname);
+    if (!inifile) {
+        Tcl_SetObjResult(interp, Tcl_NewBooleanObj(0));
+    } else {
+        // Successfully switched to a new ini-file
+	// We don't want to call 'emc_init' or iniLoad() because we do not want
+	// any NML connection to be established or overwritten from a previous
+	// call or any internals previously set to change. We only want to be
+	// able to query the new ini-file.
+        // Set the global filename
+        rtapi_strxcpy(emc_inifile, fname);
+        // Update Tcl's filename variable
+        Tcl_SetVar(interp, "EMC_INIFILE", emc_inifile, TCL_GLOBAL_ONLY);
+        Tcl_SetObjResult(interp, Tcl_NewBooleanObj(1));
+    }
     return TCL_OK;
 }
 
@@ -3434,6 +3711,22 @@ int Linuxcnc_Init(Tcl_Interp * interp)
 			 (Tcl_CmdDeleteProc *) NULL);
 
     Tcl_CreateObjCommand(interp, "emc_ini", emc_ini, (ClientData) NULL,
+			 (Tcl_CmdDeleteProc *) NULL);
+    Tcl_CreateObjCommand(interp, "emc_ini_bool", emc_ini_bool, (ClientData) NULL,
+			 (Tcl_CmdDeleteProc *) NULL);
+    Tcl_CreateObjCommand(interp, "emc_ini_real", emc_ini_real, (ClientData) NULL,
+			 (Tcl_CmdDeleteProc *) NULL);
+    Tcl_CreateObjCommand(interp, "emc_ini_int", emc_ini_int, (ClientData) NULL,
+			 (Tcl_CmdDeleteProc *) NULL);
+    Tcl_CreateObjCommand(interp, "emc_ini_wideint", emc_ini_wideint, (ClientData) NULL,
+			 (Tcl_CmdDeleteProc *) NULL);
+    Tcl_CreateObjCommand(interp, "emc_ini_sections", emc_ini_sections, (ClientData) NULL,
+			 (Tcl_CmdDeleteProc *) NULL);
+    Tcl_CreateObjCommand(interp, "emc_ini_variables", emc_ini_variables, (ClientData) NULL,
+			 (Tcl_CmdDeleteProc *) NULL);
+    Tcl_CreateObjCommand(interp, "emc_ini_filename", emc_ini_filename, (ClientData) NULL,
+			 (Tcl_CmdDeleteProc *) NULL);
+    Tcl_CreateObjCommand(interp, "emc_ini_load", emc_ini_load, (ClientData) NULL,
 			 (Tcl_CmdDeleteProc *) NULL);
 
     Tcl_CreateObjCommand(interp, "emc_debug", emc_Debug, (ClientData) NULL,

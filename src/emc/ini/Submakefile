@@ -46,4 +46,12 @@ TARGETS += ../bin/inivar
 	$(ECHO) Copying python script $(notdir $@)
 	$(Q)(echo '#!$(PYTHON)'; sed '1 { /^#!/d; }' $<) > $@.tmp && chmod +x $@.tmp && mv -f $@.tmp $@
 
+# Ini-file checker at linuxcnc start
+../bin/linuxcnc_check_ini: emc/ini/linuxcnc_check_ini.py
+	@$(ECHO) Syntax checking python script $(notdir $@)
+	$(Q)$(PYTHON) -m py_compile $<
+	$(ECHO) Copying python script $(notdir $@)
+	$(Q)(echo '#!$(PYTHON)'; sed '1 { /^#!/d; }' $<) > $@.tmp && chmod +x $@.tmp && mv -f $@.tmp $@
+
 PYTARGETS += ../bin/update_ini
+PYTARGETS += ../bin/linuxcnc_check_ini

@@ -48,6 +48,7 @@ man1/latency-histogram.1
 man1/latency-plot.1
 man1/latency-test.1
 man1/lineardelta.1
+man1/linuxcnc_check_ini.1
 man1/linuxcnc_info.1
 man1/linuxcnc_module_helper.1
 man1/linuxcnc_var.1

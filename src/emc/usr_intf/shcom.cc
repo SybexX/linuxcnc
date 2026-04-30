@@ -418,9 +418,6 @@ double convertAngularUnits(double u)
     return u;
 }
 
-// polarities for joint jogging, from INI file
-static int jogPol[EMCMOT_MAX_JOINTS];
-
 int sendDebug(int level)
 {
     EMC_SET_DEBUG debug_msg;
@@ -1007,26 +1004,19 @@ int iniLoad(const char *filename)
     if (auto inistring = inifile.findString("NML_FILE", "EMC")) {
 	// copy to global
 	rtapi_strxcpy(emc_nmlfile, inistring->c_str());
-    } else {
-	// not found, use default
-    }
-
-    for (int t = 0; t < EMCMOT_MAX_JOINTS; t++) {
-	jogPol[t] = 1;		// set to default
-	auto inival = inifile.findSInt("JOGGING_POLARITY", fmt::format("JOINT_{}", t));
-	if (inival && *inival == 0) {
-	    // it read as 0, so override default
-	    jogPol[t] = 0;
-	}
-    }
+    } // else not found, use default or previously set
 
     if (auto inival = mapLinearUnits(inifile, "LINEAR_UNITS", "DISPLAY")) {
         linearUnitConversion = *inival;
-    } // else not found, leave default alone
+    } else {
+        linearUnitConversion = LINEAR_UNITS_AUTO;
+    }
 
     if (auto inival = mapAngularUnits(inifile, "ANGULAR_UNITS", "DISPLAY")) {
         angularUnitConversion = *inival;
-    } // else not found, leave default alone
+    } else {
+        angularUnitConversion = ANGULAR_UNITS_AUTO;
+    }
 
     return 0;
 }
