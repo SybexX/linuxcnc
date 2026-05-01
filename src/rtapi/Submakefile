@@ -46,7 +46,6 @@ $(call TOOBJSDEPS, $(RTAPI_APP_SRCS)): EXTRAFLAGS += -DSIM \
 	$(ECHO) Linking $(notdir $@)
 	$(Q)$(CXX) -rdynamic -o $@ $^ $(LIBDL) -pthread -lrt -lfmt $(LIBUDEV_LIBS) -ldl $(LDFLAGS)
 TARGETS += ../bin/rtapi_app
-endif
 
 USPACE_POSIX_SRCS := rtapi/uspace_posix.cc
 USERSRCS += $(USPACE_POSIX_SRCS)
@@ -56,6 +55,8 @@ $(call TOOBJSDEPS, $(USPACE_POSIX_SRCS)): EXTRAFLAGS += -pthread -fPIC
 	$(Q)$(CXX) -shared $(LDFLAGS) -o $@ $^ -Wl,-soname,$(notdir $@)
 TARGETS += ../lib/liblinuxcnc-uspace-posix.so.0
 TARGETS += ../lib/liblinuxcnc-uspace-posix.so
+
+endif
 
 ifeq ($(CONFIG_USPACE_RTAI),y)
 USPACE_RTAI_SRCS := rtapi/uspace_rtai.cc
