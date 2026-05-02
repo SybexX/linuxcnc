@@ -46,4 +46,36 @@
 
 #endif // defined(__cplusplus)
 
+/* Prefixed aliases for the C11 atomic typedefs. C++ pre-C++23 does not
+   expose the unqualified <stdatomic.h> typedefs at global scope, so use
+   these names when declaring atomic fields in headers shared between C
+   and C++ translation units. */
+#if defined(__cplusplus)
+typedef std::atomic_bool   rtapi_atomic_bool;
+typedef std::atomic_char   rtapi_atomic_char;
+typedef std::atomic_schar  rtapi_atomic_schar;
+typedef std::atomic_uchar  rtapi_atomic_uchar;
+typedef std::atomic_short  rtapi_atomic_short;
+typedef std::atomic_ushort rtapi_atomic_ushort;
+typedef std::atomic_int    rtapi_atomic_int;
+typedef std::atomic_uint   rtapi_atomic_uint;
+typedef std::atomic_long   rtapi_atomic_long;
+typedef std::atomic_ulong  rtapi_atomic_ulong;
+typedef std::atomic_llong  rtapi_atomic_llong;
+typedef std::atomic_ullong rtapi_atomic_ullong;
+#else
+typedef atomic_bool   rtapi_atomic_bool;
+typedef atomic_char   rtapi_atomic_char;
+typedef atomic_schar  rtapi_atomic_schar;
+typedef atomic_uchar  rtapi_atomic_uchar;
+typedef atomic_short  rtapi_atomic_short;
+typedef atomic_ushort rtapi_atomic_ushort;
+typedef atomic_int    rtapi_atomic_int;
+typedef atomic_uint   rtapi_atomic_uint;
+typedef atomic_long   rtapi_atomic_long;
+typedef atomic_ulong  rtapi_atomic_ulong;
+typedef atomic_llong  rtapi_atomic_llong;
+typedef atomic_ullong rtapi_atomic_ullong;
+#endif
+
 #endif
