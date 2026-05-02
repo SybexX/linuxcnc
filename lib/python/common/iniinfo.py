@@ -908,6 +908,42 @@ class _IStat(object):
             except:
                 return None
 
+    def get_ini_macro_command(self, key):
+        """ returns A MACRO command string from the INI heading [MACROS] or None
+
+        key -- can be a integer or a string
+        using an integer is the legacy way to refer to the nth line.
+        using a string will refer to the specific command regardless what line 
+        it is on."""
+        try:
+            # should fail if not string
+            return self.MACRO_COMMAND_DICT[key]['cmd']
+        except:
+            # fallback to legacy variable
+            try:
+                # should fail if not int
+                return self.MACRO_COMMAND_LIST[key]
+            except:
+                return None
+
+    def get_ini_macro_label(self, key):
+        """ returns A MACRO label string from the INI heading [MACROS] or None
+
+        key -- can be a integer or a string
+        Using an integer is the legacy way to refer to the nth line in the INI.
+        Using a string will refer to the specific command regardless of what line 
+        it is on."""
+        try:
+            # should fail if not string
+            return self.MACRO_COMMAND_DICT[key]['label']
+        except:
+            # fallback to legacy variable
+            try:
+                # should fail if not int
+                return self.MACRO_COMMAND_LABEL_LIST[key]
+            except:
+                return None
+
     # Process any multi message options like log level
     def parse_message_options(self, options):
         temp = {}
