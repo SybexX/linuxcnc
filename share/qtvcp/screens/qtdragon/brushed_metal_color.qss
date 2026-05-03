@@ -573,4 +573,6 @@ MacroTab QRadioButton::indicator {
     width: 22px;
     height: 22px;
 }
-
+QScrollArea > QWidget > QWidget {
+ background-image: url(:/images/images/brushed_metal.png);
+}
