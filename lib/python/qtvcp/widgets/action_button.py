@@ -726,13 +726,15 @@ class ActionButton(IndicatedPushButton):
             # we prefer named INI MDI commands:
             if not self.ini_mdi_keystring == '' and \
                     not INFO.get_ini_mdi_command(self.ini_mdi_keystring) is None:
-                LOG.debug("INI MDI COMMAND #: {}".format(self.ini_mdi_keystring))
+                cmd = INFO.get_ini_mdi_command(self.ini_mdi_keystring)
+                LOG.debug("INI MDI COMMAND #: {},{}".format(self.ini_mdi_keystring,cmd))
                 ACTION.CALL_INI_MDI(self.ini_mdi_keystring)
 
             # legacy version (nth line)
             elif not self.ini_mdi_num <0 and \
                     not INFO.get_ini_mdi_command(self.ini_mdi_num) is None:
-                LOG.debug("INI MDI COMMAND #: {}".format(self.ini_mdi_num))
+                cmd = INFO.get_ini_mdi_command(self.ini_mdi_num)
+                LOG.debug("INI MDI COMMAND #: {},{}".format(self.ini_mdi_num,cmd))
                 ACTION.CALL_INI_MDI(self.ini_mdi_num)
 
             # set the indicator that the MDI command is running
