@@ -54,16 +54,21 @@ LOG = logger.getLogger(__name__)
 # LOG.setLevel(logger.DEBUG) # One of DEBUG, INFO, WARNING, ERROR, CRITICAL
 
 # load this after Logging set up so we get a nice dialog.
+import qtpy
+
 try:
     from qtpy.Qsci import QsciScintilla, QsciLexerCustom, QsciLexerPython
 except ImportError:
-    try:
-        from PyQt5.Qsci import QsciScintilla, QsciLexerCustom, QsciLexerPython
-    except ImportError:
+    if qtpy.PYQT5:
+        try:
+            from PyQt5.Qsci import QsciScintilla, QsciLexerCustom, QsciLexerPython
+        except ImportError:
+            LOG.critical("Can't import QsciScintilla - is package python3-pyqt5.qsci installed?", exc_info=e)
+    else:
         try:
             from PyQt6.Qsci import QsciScintilla, QsciLexerCustom, QsciLexerPython
         except ImportError as e:
-            LOG.critical("Can't import QsciScintilla - is package python3-pyqt5.qsci or python3-pyqt6.qsci installed?", exc_info=e)
+            LOG.critical("Can't import QsciScintilla - is package python3-pyqt6.qsci installed?", exc_info=e)
             sys.exit(1)
 
 
@@ -821,7 +826,6 @@ class GcodeEditor(QWidget, _HalWidgetBase):
 
         # make editor
         self.editor = GcodeDisplay(self)
-
         # class patch editor's function to ours
         # so we get the lines percent update
         self.editor.emit_percent = self.emit_percent

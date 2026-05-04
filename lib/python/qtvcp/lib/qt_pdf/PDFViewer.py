@@ -10,19 +10,26 @@ LOG = logger.getLogger(__name__)
 USE_QTPDF = False
 USE_POPPLER = False
 
-try:
-    from qtpy.QtPdf import QPdfDocument, QPdfDocumentRenderOptions
-    _QTPDF_RENDER_OPTS = QPdfDocumentRenderOptions()
-    _QTPDF_RENDER_OPTS.setRenderFlags(
-        QPdfDocumentRenderOptions.RenderFlag.Annotations
-    )
-    USE_QTPDF = True
-except Exception:
+import qtpy
+if qtpy.PYQT6:
+    try:
+        from qtpy.QtPdf import QPdfDocument, QPdfDocumentRenderOptions
+        _QTPDF_RENDER_OPTS = QPdfDocumentRenderOptions()
+        _QTPDF_RENDER_OPTS.setRenderFlags(
+            QPdfDocumentRenderOptions.RenderFlag.Annotations
+        )
+        USE_QTPDF = True
+    except Exception as e:
+        LOG.warning('PDFViewer - QtPdf is not available, install python3-pyqt6.qtpdf')
+
+        print(e)
+
+elif qtpy.PYQT5:
     try:
         import popplerqt5
         USE_POPPLER = True
     except Exception:
-        LOG.warning('PDFViewer - Neither QtPdf nor python3-poppler-qt5 is available.')
+        LOG.warning('PDFViewer - Poppler qt5 is not available, install python3-poppler-qt5')
 
 LIB_BAD = not USE_QTPDF and not USE_POPPLER
 
