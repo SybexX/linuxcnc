@@ -460,11 +460,11 @@ class Lcnc_3dGraphics(QOpenGLWidget,  glcanon.GlCanonDraw, glnav.GlNavBase):
         props = {}
         loaded_file = self._current_file
         if self.inifile.hasvariable("DISPLAY","MAX_LINEAR_VELOCITY"):
-            max_speed = self.inifile.getreal("DISPLAY","MAX_LINEAR_VELOCITY", 1.0)
+            max_speed = self.inifile.getreal("DISPLAY","MAX_LINEAR_VELOCITY", fallback=1.0)
         elif self.inifile.hasvariable("TRAJ","MAX_LINEAR_VELOCITY"):
-            max_speed = self.inifile.getreal("TRAJ","MAX_LINEAR_VELOCITY", 1.0)
+            max_speed = self.inifile.getreal("TRAJ","MAX_LINEAR_VELOCITY", fallback=1.0)
         elif self.inifile.hasvariable("AXIS_X","MAX_VELOCITY"):
-            max_speed = self.inifile.getreal("AXIS_X","MAX_VELOCITY", 1.0)
+            max_speed = self.inifile.getreal("AXIS_X","MAX_VELOCITY", fallback=1.0)
         else:
             max_speed = 1.0
 
