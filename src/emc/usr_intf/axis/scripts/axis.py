@@ -123,7 +123,7 @@ ap = AxisPreferences()
 # Handle repeated key press events
 pressed_keys_list = []
 def key_pressed(ev):
-    if None == ev:
+    if None == ev or not isinstance(ev, Tkinter.Event):
         return False
     if ev.keysym in pressed_keys_list:
         return True
@@ -131,7 +131,7 @@ def key_pressed(ev):
     return False
 
 def key_released(ev):
-    if None == ev:
+    if None == ev or not isinstance(ev, Tkinter.Event):
         return
     # KeyRelease without KeyPress may happen when a modifier is active when
     # the key is pressed without a KeyPress handler. No KeyPress event is
