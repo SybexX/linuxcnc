@@ -96,11 +96,11 @@ class Gauge(QtWidgets.QWidget, _HalWidgetBase):
 
     def draw_gauge(self, qp, event, w):
         w *= 0.6
-        w =int(w)
+        w = int(w)
         rect = QRect()
         rect.setSize(QSize(w, w))
         rect.moveCenter(event.rect().center())
-        center = rect.center()
+        center = QPointF(rect.center())
         qp.setPen(QPen(Qt.white, self.tick_width, cap = Qt.FlatCap))
         qp.drawArc(rect, (-45 * 16), (270 * 16))
         rad = rect.width()/2
@@ -139,7 +139,7 @@ class Gauge(QtWidgets.QWidget, _HalWidgetBase):
         rect.setSize(QSize(w, w))
         rect.moveCenter(event.rect().center())
         rad = rect.width()/2
-        cap = QRadialGradient(rect.center(), rad)
+        cap = QRadialGradient(QPointF(rect.center()), rad)
         cap.setColorAt(0, self._center_gradient_color)
         cap.setColorAt(1, self._center_color)
         qp.setPen(QPen(self._bezel_color, 1.5))
@@ -148,7 +148,7 @@ class Gauge(QtWidgets.QWidget, _HalWidgetBase):
 
     def draw_setpoint(self, qp, event, w):
         w *= 0.6
-        center = event.rect().center()
+        center = QPointF(event.rect().center())
         rad = w/2
         rect = QRect(0, 0, 8, 8)
         p = self._setpoint * rad

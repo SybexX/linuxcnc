@@ -190,7 +190,9 @@ class _VCPWindow(QtWidgets.QMainWindow):
             except FileNotFoundError:
                 pass
             try:
-                rcc = shutil.which("rcc", path="{}{}{}".format(os.getenv("PATH", ""), os.pathsep, "/usr/lib/qt6/libexec")) or "rcc"
+                rcc = shutil.which("pyside6-rcc")
+                if not rcc:
+                    rcc = shutil.which("rcc", path="{}{}{}".format(os.getenv("PATH", ""), os.pathsep, "/usr/lib/qt6/libexec")) or "rcc"
                 subprocess.call([rcc, "-g", "python", "-o", "{}".format(qrcpy), "{}".format(qrcname)])
                 # rcc generates PySide6 imports; rewrite to use qtpy
                 with open(qrcpy, 'r') as f:
