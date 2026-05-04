@@ -168,7 +168,7 @@ static std::string remove_quotes(const std::string &s) {
 }
 
 static int do_comp_args(void *module, const std::vector<std::string> &args) {
-    for (unsigned i = 0; i < args.size(); i++) {
+    for (size_t i = 0; i < args.size(); i++) {
         std::string s = remove_quotes(args[i]);
         size_t idx = s.find('=');
         if (idx == std::string::npos) {
@@ -312,7 +312,11 @@ static int do_debug_cmd(const std::string &value) {
  * signal, change to something like while(remaining > 0 && !exit_flag)
  * and set exit_flag in signal handler
  */
-static int send_data(int fd, const void *buf, size_t n, int flags) {
+static ssize_t send_data(int fd, const void *buf, size_t n, int flags) {
+    if(n > SSIZE_MAX){
+        errno=EFBIG;
+        return -1;
+    }
     const uint8_t *ptr = (const uint8_t *)buf;
     size_t n_rem = n;
     while (n_rem > 0) {
@@ -333,7 +337,11 @@ static int send_data(int fd, const void *buf, size_t n, int flags) {
     return n; // All sent
 }
 
-static int recv_data(int fd, void *buf, size_t n, int flags) {
+static ssize_t recv_data(int fd, void *buf, size_t n, int flags) {
+    if(n > SSIZE_MAX){
+        errno=EFBIG;
+        return -1;
+    }
     uint8_t *ptr = (uint8_t *)buf;
     size_t n_rem = n;
     while (n_rem > 0) {
@@ -408,8 +416,8 @@ static bool recv_result(int fd, int *result) {
 }
 
 static void push_uint16(std::vector<char> &buf, uint16_t value) {
-    buf.push_back(0xff & (value >> 0));
-    buf.push_back(0xff & (value >> 8));
+    buf.push_back((char)(0xff & (value >> 0)));
+    buf.push_back((char)(0xff & (value >> 8)));
 }
 
 static uint16_t get_uint16(const std::vector<char> &buf, size_t idx) {
@@ -486,19 +494,25 @@ static bool send_args(int fd, const std::vector<std::string> &args) {
         buff_size += args[i].size();
     }
 
-    //This is the largest value set by set_int16()
+    //Check uint16_t conversions
+    //Buffer size is > sum(args[i].size()) so they don't need a separate check
     if (buff_size > std::numeric_limits<uint16_t>::max()) {
         rtapi_print_msg(RTAPI_MSG_ERR, "rtapi_app: send_args: args to big, size = %li!\n", buff_size);
+        return false;
+    }
+    //Edge case: One could in theory send many size zero args
+    if (args.size() > std::numeric_limits<uint16_t>::max()) {
+        rtapi_print_msg(RTAPI_MSG_ERR, "rtapi_app: send_args: arg count to big, size = %li!\n", args.size());
         return false;
     }
 
     //Serialize
     std::vector<char> buf;
     buf.reserve(buff_size);
-    push_uint16(buf, buff_size);
-    push_uint16(buf, args.size());
+    push_uint16(buf, (uint16_t)buff_size);
+    push_uint16(buf, (uint16_t)args.size());
     for (size_t i = 0; i < args.size(); i++) {
-        push_uint16(buf, args[i].size());
+        push_uint16(buf, (uint16_t)args[i].size());
         buf.insert(buf.end(), args[i].begin(), args[i].end());
     }
     if (buf.size() != buff_size) {
@@ -672,7 +686,7 @@ static bool get_fifo_path_to_addr(struct sockaddr_un *addr) {
 }
 
 static double diff_timespec(const struct timespec *time1, const struct timespec *time0) {
-    return (time1->tv_sec - time0->tv_sec) + (time1->tv_nsec - time0->tv_nsec) / 1000000000.0;
+    return (double)(time1->tv_sec - time0->tv_sec) + (double)(time1->tv_nsec - time0->tv_nsec) / 1000000000.0;
 }
 
 int main(int argc, char **argv) {
@@ -755,7 +769,7 @@ become_master:
             if (result == 0)
                 break;
 
-            usleep(lrand48() % 100000 + 100); //Random sleep min 100us max 100100us
+            usleep((useconds_t)(lrand48() % 100000) + 100); //Random sleep min 100us max 100100us
             clock_gettime(CLOCK_MONOTONIC, &now);
         }
         if (result < 0 && errno == ECONNREFUSED) {
@@ -941,8 +955,7 @@ static int harden_rt() {
     if (fd < 0) {
         rtapi_print_msg(RTAPI_MSG_WARN, "failed to open /dev/cpu_dma_latency: %s\n", strerror(errno));
     } else {
-        int r;
-        r = write(fd, "\0\0\0\0", 4);
+        ssize_t r = write(fd, "\0\0\0\0", 4);
         if (r != 4) {
             rtapi_print_msg(RTAPI_MSG_WARN, "failed to write to /dev/cpu_dma_latency: %s\n", strerror(errno));
         }
