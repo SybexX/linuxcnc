@@ -3295,6 +3295,7 @@ int main(int argc, char *argv[])
     }
     while (!done) {
         static int gave_soft_limit_message = 0;
+        static int prev_traj_enabled = 0;
         task_beat++;  // Task's heartbeat
 
         check_ini_hal_items(emcStatus->motion.traj.joints);
@@ -3314,6 +3315,14 @@ int main(int argc, char *argv[])
 	// update subordinate status
 
 	emcMotionUpdate(&emcStatus->motion);
+	// On a motion enabled -> disabled edge (limit switch, amp fault,
+	// following error, etc.) unhome joints marked VOLATILE_HOME. The estop
+	// and machine-off paths already do their own unhome; this catches the
+	// remaining drive-disable causes that don't flip task state.
+	if (prev_traj_enabled && !emcStatus->motion.traj.enabled) {
+	    emcJointUnhome(-2); // only those joints which are volatile_home
+	}
+	prev_traj_enabled = emcStatus->motion.traj.enabled;
 	// synchronize subordinate states
 	if (emcStatus->io.aux.estop) {
 	    if (emcStatus->motion.traj.enabled) {
