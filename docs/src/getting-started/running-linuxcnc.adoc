@@ -153,18 +153,18 @@ that is used to describe a specific configuration.
 
 === When the copy happens
 
-The Configuration Selector decides whether to copy a sample
-configuration to ~/linuxcnc/configs based on where the source
-configuration lives:
+For the following cases the Configuration Selector copies the chosen sample
+configuration to ~/linuxcnc/configs:
 
 * *Package install (deb, rpm, distro packages)*: sample configurations
-  live under a system path. The selector copies the configuration to
-  ~/linuxcnc/configs before running it, so edits never touch the
-  system-wide files.
-* *Run-In-Place (RIP) build*: the source tree is normally writable by
-  the user who built it, so the selector runs the configuration
-  directly from the source tree without copying. Edits made through
-  the configuration apply to the files in the RIP tree.
+  live under a system path and are not writabe.
+* *The file is not in the directory tree of `CONFIG_DIR`* (environmental variable)
+* *The file is in a directory included in `LINUXCNC_AUX_EXAMPLES`* (environmental variable)
+
+For *Run-In-Place (RIP) builds* the source tree is normally writable by
+the user who built it, so the selector runs the configuration
+directly from the source tree without copying. Edits made through
+the configuration apply to the files in the RIP tree.
 
 === Forcing a copy from a RIP build
 
