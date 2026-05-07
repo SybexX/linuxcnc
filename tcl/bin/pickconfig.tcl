@@ -405,9 +405,12 @@ set f2 [ frame $f1.f2 -borderwidth 0 -relief flat -padx 15 ]
 # Let the tree scroll
 set s1 [ SW $f2.f3 -auto both]
 $s1 configure -relief sunken -borderwidth 2
+# get the font height to scale the height of the tree rows
+set font_linespace [font metrics [linuxcnc::standard_font] -linespace]
 # the tree
 set ::tree [Tree $s1.tree -highlightthickness 0 \
                           -width 25 -relief flat -padx 4 \
+                          -deltay $font_linespace\
                           ]
 $s1 setwidget $::tree
 pack $s1 -fill y -expand n -side left
