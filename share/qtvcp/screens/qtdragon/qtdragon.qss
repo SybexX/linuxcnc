@@ -500,5 +500,11 @@ GcodeEditor QLineEdit {
 }
 
 QScrollArea > QWidget > QWidget {
-  background-color: #404040;;
+  background-color: #404040;
+}
+
+QTextEdit{
+   background-color: #9a9996;
+    font: 10pt "Lato Heavy";
+    color: white
 }
