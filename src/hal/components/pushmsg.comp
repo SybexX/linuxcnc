@@ -8,8 +8,9 @@ HAL pin sub-tree `pushmsg.<pinname>.{trigger,force,edge}` and emits the
 corresponding text via `rtapi_print_msg()` at the chosen level.
 
 `pushmsg.<pinname>.trigger` (in bit): emits on transition to `edge` value.
-`pushmsg.<pinname>.force` (in bit): a FALSE->TRUE transition re-emits while
-trigger is at the active level.
+`pushmsg.<pinname>.force` (in bit): a FALSE->TRUE transition emits the
+message unconditionally, ignoring both the master `pushmsg.enable` gate
+and the current `trigger` state.
 `pushmsg.<pinname>.edge` (in bit): selects edge polarity. The default value
 of FALSE makes a FALSE->TRUE trigger transition emit (rising-edge mode).
 
@@ -405,7 +406,7 @@ FUNCTION(_)
     for (int i = 0; i < nslots; i++) {
         bool trig = (int)!!*(pins[i].trigger) ^ (int)!!*(pins[i].edge);
         bool force = *(pins[i].force);
-        if (en && ((trig && !slots[i].prevtrig) || (force && !slots[i].prevforce))) {
+        if ((en && trig && !slots[i].prevtrig) || (force && !slots[i].prevforce)) {
             print_slot(i);  // Rising edge -> print message
         }
         slots[i].prevtrig  = trig;
