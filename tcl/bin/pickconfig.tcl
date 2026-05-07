@@ -409,7 +409,7 @@ $s1 configure -relief sunken -borderwidth 2
 set font_linespace [font metrics [linuxcnc::standard_font] -linespace]
 # the tree
 set ::tree [Tree $s1.tree -highlightthickness 0 \
-                          -width 25 -relief flat -padx 4 \
+                          -width [expr {int($font_linespace * 1.33)}] -relief flat -padx 4 \
                           -deltay $font_linespace\
                           ]
 $s1 setwidget $::tree
