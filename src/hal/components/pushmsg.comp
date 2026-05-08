@@ -1,63 +1,83 @@
-component pushmsg "Push configurable RT messages to non-RT logging on rising edges";
+component pushmsg "Push configurable RT messages to non-RT logging on pin change";
 
 description """
-Each entry in the `msgs` modparam describes a level, pin name, and message
-text using `level|pinname|message` syntax. Level is one letter:
-`e` (error), `w` (warning), `i` (info), `d` (debug). Each entry creates a
-HAL pin sub-tree `pushmsg.<pinname>.{trigger,force,edge}` and emits the
-corresponding text via `rtapi_print_msg()` at the chosen level.
+The *pushmsg* component enables you to generate configurable messages to your
+GUI, terminal or other interface from real-time components using HAL pins.
 
-`pushmsg.<pinname>.trigger` (in bit): emits on transition to `edge` value.
-`pushmsg.<pinname>.force` (in bit): a FALSE->TRUE transition emits the
-message unconditionally, ignoring both the master `pushmsg.enable` gate
-and the current `trigger` state.
-`pushmsg.<pinname>.edge` (in bit): selects edge polarity. The default value
-of FALSE makes a FALSE->TRUE trigger transition emit (rising-edge mode).
+Up to 64 messages can be configured using the *msgs* module parameter using the
+following syntax: +
+  `"level|pinname|message"`[,...]
 
-Pin names use HAL-allowed characters (alphanumeric, dot, dash, underscore).
-Maximum 64 entries per loadrt, 2 substitutions per message, 128 chars per
-message.
+`level`:: is a letter denoting the severity level of the message with: +
+  * `e` - error
+  * `w` - warning
+  * `i` - info
+  * `d` - debug
 
-Message text may include `{t:refname}` placeholders. Each one creates a
-typed input pin `pushmsg.<pinname>.<refname>` that the user wires to the
-source signal. The type letter selects the pin type:
+`pinname`:: is the HAL pin name base used in the creation of the trigger pins:
+  * *pushmsg*.__<pinname>__.*trigger* (bit) - The trigger input to activate
+    the message
+  * *pushmsg*.__<pinname>__.*edge* (bit) - The trigger input edge selection
+    with FALSE=rising trigger edge and TRUE=falling trigger edge
+  * *pushmsg*.__<pinname>__.*force* (bit) - An always active rising edge
+    trigger to activate the message, regardless of the setting of the global
+    enable pin (*pushmsg*.*enable*)
 
-* `b` - bit
-* `s` - s32
-* `u` - u32
-* `l` - s64
-* `k` - u64
-* `f` - float
+`message`:: is a free form text message. +
+  The text may include `{t:refname}` placeholders for HAL pin value
+  substitutions (use `\\{` to embed a literal curly brace).
+  Up to two placeholders are supported.
+  Each placeholder creates a typed input pin *pushmsg*.__<pinname>__.__<refname>__
+  that the user wires up to the source signal.
+  The type letter in the placeholder selects the pin type:
+  * `b` - bit
+  * `s` - s32
+  * `u` - u32
+  * `l` - s64
+  * `k` - u64
+  * `f` - float
 
-Use `\\{` to embed a literal curly brace.
+Each message line is limited to 128 characters in length. The length count
+includes the `level` indicator, `pinname`, `message` text and the `|` separator
+characters.
 
-Example:
+HAL file example:
 [source,hal]
 ----
 loadrt pushmsg msgs="e|nooil|No oil pressure","w|low|Oil {f:level} L low"
 addf pushmsg servo-thread
 net no-oil classicladder.0.out-21 pushmsg.nooil.trigger
 net oil-level oil.level pushmsg.low.level
+...
 ----
+
+The INI-file may be an administrative help for message configuration.
+A longer list is much easier to read and maintain when split over multiple
+lines. The INI-file format supports continuations that improve readability and
+maintainability.
 
 Example INI expansion:
 [source,ini]
 ----
 [PUSHMSG]
-# Note: no surrounding whitespace
+# Note: no surrounding whitespace, last line has no comma
 MSGS=\\
 "e|nooil|No oil pressure",\\
 "w|low|Oil {f:level} L low"
 ----
+
+The HAL file then looks like:
 [source,hal]
 ----
 loadrt pushmsg msgs=[PUSHMSG]MSGS
+addf pushmsg servo-thread
+...
 ----
 """;
 
-pin in bit enable = TRUE "Enable message generation";
+pin in bit enable = TRUE "Enable message generation through trigger input pins";
 
-modparam dummy msgs "Comma separated list of custom messages in format t|pin|message";
+modparam dummy msgs "Comma separated list of custom messages in format level|pinname|message";
 
 option period no;
 option extra_setup yes;
@@ -188,7 +208,7 @@ static int setup_message(const char *pfx, int idx, const char *msg, msg_slot_t *
     pinname[pfxlen] = '.'; // "pushmsg."
     memcpy(&pinname[pfxlen+1], &msg[2], pinnamelen);
     // Only checks the actual pin name, not the prefix
-    if ((rv = check_pinname(&pinname[pfxlen+2])) < 0) {
+    if ((rv = check_pinname(&pinname[pfxlen+1])) < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR, "%s: Message %d pin name contains bad characters\n", pfx, idx);
         return rv;
     }
