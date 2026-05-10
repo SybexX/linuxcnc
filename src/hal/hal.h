@@ -1067,7 +1067,10 @@ static inline rtapi_s64 hal_extend_counter(rtapi_s64 old, rtapi_s64 newlow, int 
     */
 
     /* tripwire if somebody tries to use this code on a Cray with wrong
-       compiler flags */
+       compiler flags. */
+
+    /* prevent cppcheck to complain about the tripwire */
+    /* cppcheck-suppress shiftNegativeLHS */
     HAL_STATIC_ASSERT((-2 >> 1) == -1, 
         "hal_extend_counter impl only works with arithmetic right shift");
 
