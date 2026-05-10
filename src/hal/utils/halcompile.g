@@ -993,11 +993,7 @@ def document(filename, outfilebase):
     if functions:
         print("\n== FUNCTIONS\n", file=f)
         for _, name, fp, doc in finddocs('funct'):
-            print("%s" % to_hal_man(name), end='', file=f)
-            if fp:
-                print(" (requires a floating-point thread)::", file=f)
-            else:
-                print("::", file=f)
+            print("%s::" % to_hal_man(name), file=f)
             if doc:
                 print(doc, file=f)
             else:

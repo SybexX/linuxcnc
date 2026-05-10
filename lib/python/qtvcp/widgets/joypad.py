@@ -569,7 +569,7 @@ class HALPad(JoyPad, _HalWidgetBase):
         self._false_color = QColor('red')
 
         # we want center active for an indicator light
-        self.setProperty('highlightPosition',JoyPad.CENTER)
+        self.setProperty('highlightPosition',IndicatorPosition.CENTER)
         self.setLight(False)
 
     def _hal_init(self):

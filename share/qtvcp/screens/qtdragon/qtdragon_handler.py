@@ -398,6 +398,10 @@ class HandlerClass:
         self.w.chk_use_virtual.setChecked(self.w.PREFS_.getpref('Use virtual keyboard', False, bool, 'CUSTOM_FORM_ENTRIES'))
         self.w.chk_use_tool_sensor.setChecked(self.w.PREFS_.getpref('Use tool sensor', False, bool, 'CUSTOM_FORM_ENTRIES'))
         self.w.chk_use_camera.setChecked(self.w.PREFS_.getpref('Use camera', False, bool, 'CUSTOM_FORM_ENTRIES'))
+        self.w.chk_auto_mode_ext_macro.setChecked(self.w.PREFS_.getpref('Auto mode external macro', True, bool, 'CUSTOM_FORM_ENTRIES'))
+        self.w.chk_auto_mode_macro_buttons.setChecked(self.w.PREFS_.getpref('Auto mode macro buttons', True, bool, 'CUSTOM_FORM_ENTRIES'))
+        # make sure the button's property are current
+        self.chk_auto_mode_macro_changed(self.w.chk_auto_mode_macro_buttons.isChecked())
         self.w.chk_alpha_mode.setChecked(self.w.PREFS_.getpref('Use alpha display mode', False, bool, 'CUSTOM_FORM_ENTRIES'))
         self.w.chk_inhibit_selection.setChecked(self.w.PREFS_.getpref('Inhibit display mouse selection', True, bool, 'CUSTOM_FORM_ENTRIES'))
         self.cam_xscale_changed(self.w.PREFS_.getpref('Camview xscale', 100, int, 'CUSTOM_FORM_ENTRIES'))
@@ -408,6 +412,7 @@ class HandlerClass:
 
     def closing_cleanup__(self):
         if not self.w.PREFS_: return
+        LOG.debug("Saving Preferences")
         if self.last_loaded_program is not None:
             self.w.PREFS_.putpref('last_loaded_directory', os.path.dirname(self.last_loaded_program), str, 'BOOK_KEEPING')
             self.w.PREFS_.putpref('last_loaded_file', self.last_loaded_program, str, 'BOOK_KEEPING')
@@ -435,6 +440,8 @@ class HandlerClass:
         self.w.PREFS_.putpref('Use virtual keyboard', self.w.chk_use_virtual.isChecked(), bool, 'CUSTOM_FORM_ENTRIES')
         self.w.PREFS_.putpref('Use tool sensor', self.w.chk_use_tool_sensor.isChecked(), bool, 'CUSTOM_FORM_ENTRIES')
         self.w.PREFS_.putpref('Use camera', self.w.chk_use_camera.isChecked(), bool, 'CUSTOM_FORM_ENTRIES')
+        self.w.PREFS_.putpref('Auto mode external macro', self.w.chk_auto_mode_ext_macro.isChecked(), bool, 'CUSTOM_FORM_ENTRIES')
+        self.w.PREFS_.putpref('Auto mode macro buttons', self.w.chk_auto_mode_macro_buttons.isChecked(), bool, 'CUSTOM_FORM_ENTRIES')
         self.w.PREFS_.putpref('Use alpha display mode', self.w.chk_alpha_mode.isChecked(), bool, 'CUSTOM_FORM_ENTRIES')
         self.w.PREFS_.putpref('Inhibit display mouse selection', self.w.chk_inhibit_selection.isChecked(), bool, 'CUSTOM_FORM_ENTRIES')
         self.w.PREFS_.putpref('Camview xscale', self.cam_xscale_percent(), int, 'CUSTOM_FORM_ENTRIES')
@@ -904,7 +911,7 @@ class HandlerClass:
 
     # called from hal_glib to run macros from external event
     def request_macro_call(self, data):
-        if not STATUS.is_mdi_mode():
+        if not self.w.chk_auto_mode_ext_macro.isChecked() and not STATUS.is_mdi_mode():
             self.add_status(_translate("HandlerClass",'Machine must be in MDI mode to run macros'), WARNING)
             return
         if 'ini-macro-cmd' in data:
@@ -1238,6 +1245,14 @@ class HandlerClass:
     def chk_use_camera_changed(self, state):
         self.w.btn_ref_camera.setEnabled(state)
         self.w.btn_camera.show() if state else self.w.btn_camera.hide()
+
+    def chk_auto_mode_macro_changed(self, state):
+        for b in range(0,10):
+            button = self.w['macrobutton{}'.format(b)]
+            button.setProperty('mdi_mode_check_action',not state)
+
+    def chk_auto_mode_external_macro_changed(self, state):
+        pass
 
     def chk_use_sensor_changed(self, state):
         self.w.btn_touch_sensor.setEnabled(state)

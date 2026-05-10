@@ -1,5 +1,5 @@
 
-from qtpy import QtCore, QtGui, Qt
+from qtpy import QtCore, QtGui
 from qtpy.QtGui import QColor
 from qtpy.QtCore import Slot
 from qtpy.QtWidgets import QWidget
@@ -171,7 +171,7 @@ class RoundProgressBar(QWidget):
             p.drawEllipse(baseRect)
         elif bs == self.StyleLine:
             p.setPen(QtGui.QPen(self.palette().base().color(), self.outlinePenWidth))
-            p.setBrush(Qt.Qt.NoBrush)
+            p.setBrush(QtCore.Qt.NoBrush)
             p.drawEllipse(baseRect.adjusted(self.outlinePenWidth/2, self.outlinePenWidth/2, -self.outlinePenWidth/2, -self.outlinePenWidth/2))
 
     def drawValue(self, p, baseRect, value, arcLength):
@@ -182,7 +182,7 @@ class RoundProgressBar(QWidget):
         # for Line style
         if self.barStyle == self.StyleLine:
             p.setPen(QtGui.QPen(self.palette().highlight().color(), self.dataPenWidth))
-            p.setBrush(Qt.Qt.NoBrush)
+            p.setBrush(QtCore.Qt.NoBrush)
             p.drawArc(baseRect.adjusted(self.outlinePenWidth/2, self.outlinePenWidth/2, -self.outlinePenWidth/2, -self.outlinePenWidth/2),
                       self.nullPosition * 16,
                       -arcLength * 16)
@@ -190,7 +190,7 @@ class RoundProgressBar(QWidget):
 
         # for Pie and Donut styles
         dataPath = QtGui.QPainterPath()
-        dataPath.setFillRule(Qt.Qt.WindingFill)
+        dataPath.setFillRule(QtCore.Qt.WindingFill)
 
         # pie segment outer
         dataPath.moveTo(baseRect.center())
@@ -237,7 +237,7 @@ class RoundProgressBar(QWidget):
 
         textRect = innerRect
         p.setPen(self.palette().text().color())
-        p.drawText(textRect, Qt.Qt.AlignCenter, text)
+        p.drawText(textRect, QtCore.Qt.AlignCenter, text)
 
     def valueToText(self, value):
         textToDraw = self.format

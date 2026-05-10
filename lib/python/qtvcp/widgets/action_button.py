@@ -42,6 +42,10 @@ LOG = logger.getLogger(__name__)
 # Force the log level for this module
 LOG.setLevel(logger.DEBUG) # One of DEBUG, INFO, WARNING, ERROR, CRITICAL
 
+DEFAULT = 0
+WARNING = 1
+CRITICAL = 2
+
 class ActionButton(IndicatedPushButton):
     def __init__(self, parent=None):
         super(ActionButton, self).__init__(parent)
@@ -103,6 +107,7 @@ class ActionButton(IndicatedPushButton):
         self.optional_stop = False
         self.mdi_command = False
         self.ini_mdi_command = False
+        self.is_in_mdi_mode_check = False
         self.dro_relative = False
         self.dro_absolute = False
         self.dro_dtg = False
@@ -466,7 +471,8 @@ class ActionButton(IndicatedPushButton):
         # don't do anything if the signal is blocked
         if self._block_signal: return
         if self._no_action:
-            pass
+            # can be patched by handler
+            self.noActionFunction(self, state)
         elif self.estop:
             if self.isCheckable():
                 if STATUS.estop_is_clear():
@@ -700,21 +706,35 @@ class ActionButton(IndicatedPushButton):
                 else:
                     ACTION.SET_BLOCK_DELETE_OFF()
         elif self.mdi_command:
+            if self.is_in_mdi_mode_check and not STATUS.is_mdi_mode():
+                try:
+                    self.QTVCP_INSTANCE_.add_status('MDI COMMAND: Not in MDI Mode', WARNING, noLog=False)
+                except:
+                    pass
+                return
             self.command_text = str(self.command_text)
             LOG.debug("MDI STRING COMMAND: {}".format(self.command_text))
             ACTION.CALL_MDI(self.command_text)
 
         elif self.ini_mdi_command:
+            if self.is_in_mdi_mode_check and not STATUS.is_mdi_mode():
+                try:
+                    self.QTVCP_INSTANCE_.add_status('INI MDI COMMAND: Not in MDI Mode', WARNING, noLog=False)
+                except:
+                    pass
+                return
             # we prefer named INI MDI commands:
             if not self.ini_mdi_keystring == '' and \
                     not INFO.get_ini_mdi_command(self.ini_mdi_keystring) is None:
-                LOG.debug("INI MDI COMMAND #: {}".format(self.ini_mdi_keystring))
+                cmd = INFO.get_ini_mdi_command(self.ini_mdi_keystring)
+                LOG.debug("INI MDI COMMAND #: {},{}".format(self.ini_mdi_keystring,cmd))
                 ACTION.CALL_INI_MDI(self.ini_mdi_keystring)
 
             # legacy version (nth line)
             elif not self.ini_mdi_num <0 and \
                     not INFO.get_ini_mdi_command(self.ini_mdi_num) is None:
-                LOG.debug("INI MDI COMMAND #: {}".format(self.ini_mdi_num))
+                cmd = INFO.get_ini_mdi_command(self.ini_mdi_num)
+                LOG.debug("INI MDI COMMAND #: {},{}".format(self.ini_mdi_num,cmd))
                 ACTION.CALL_INI_MDI(self.ini_mdi_num)
 
             # set the indicator that the MDI command is running
@@ -880,6 +900,10 @@ class ActionButton(IndicatedPushButton):
             # otherwise set any optional label
             msg = 'MDI_COMMAND_{} Not found under [MDI_COMMAND_LIST] in INI file'.format(key)
             self.setToolTip(msg)
+
+    # re-definable/redirectable
+    def noActionFunction(self, widget, state):
+        pass
 
     #########################################################################
     # This is how designer can interact with our widget properties.
@@ -1413,6 +1437,13 @@ class ActionButton(IndicatedPushButton):
     def reset_ini_mdi_command(self):
         self.ini_mdi_command = False
 
+    def set_mdi_mode_check(self, data):
+        self.is_in_mdi_mode_check = data
+    def get_mdi_mode_check(self):
+        return self.is_in_mdi_mode_check
+    def reset_mdi_mode_check(self):
+        self.is_in_mdi_mode_check = False
+
     def set_dro_absolute(self, data):
         self.dro_absolute = data
         if data:
@@ -1617,6 +1648,7 @@ class ActionButton(IndicatedPushButton):
     optional_stop_action = QtCore.Property(bool, get_optional_stop, set_optional_stop, reset_optional_stop)
     mdi_command_action = QtCore.Property(bool, get_mdi_command, set_mdi_command, reset_mdi_command)
     ini_mdi_command_action = QtCore.Property(bool, get_ini_mdi_command, set_ini_mdi_command, reset_ini_mdi_command)
+    mdi_mode_check_action = QtCore.Property(bool, get_mdi_mode_check, set_mdi_mode_check, reset_mdi_mode_check)
     dro_absolute_action = QtCore.Property(bool, get_dro_absolute, set_dro_absolute, reset_dro_absolute)
     dro_relative_action = QtCore.Property(bool, get_dro_relative, set_dro_relative, reset_dro_relative)
     dro_dtg_action = QtCore.Property(bool, get_dro_dtg, set_dro_dtg, reset_dro_dtg)

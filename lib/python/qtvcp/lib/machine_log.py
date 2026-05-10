@@ -35,7 +35,6 @@ class MachineLogger():
             self.logOn = True
             return
         if option == 'OFF':
-            print('LOG OFF')
             self.logOn = False
             return
         if self.logOn != True:

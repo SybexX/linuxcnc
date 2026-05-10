@@ -13,7 +13,7 @@ import linuxcnc
 from . import logger
 
 LOG = logger.getLogger(__name__)
-# LOG.setLevel(logger.DEBUG) # One of DEBUG, INFO, WARNING, ERROR, CRITICAL
+#LOG.setLevel(logger.DEBUG) # One of DEBUG, INFO, WARNING, ERROR, CRITICAL
 
 from qtvcp.core import Status, Info, Path
 
@@ -247,6 +247,20 @@ class _Lcnc_Action(object):
         self.ensure_mode(linuxcnc.MODE_MDI)
         for code in (mdi_list):
             LOG.debug('CALL_INI_MDI command:{}'.format(code))
+            # check for oword and confirm path exists
+            try:
+                result = self.extract_oword_basename(code)
+                if any(char.isupper() for char in result):
+                    LOG.error(f'Oword {result}.ngc: filename cannot have uppercase letters.')
+                    self.SET_ERROR_MESSAGE(f'Oword {result}.ngc: filename cannot have uppercase letters.')
+                    return
+                if not INFO.is_in_known_paths(result+'.ngc'):
+                    LOG.error(f'Oword {result}.ngc path not found in INI paths. See system log')
+                    self.SET_ERROR_MESSAGE(f'Oword {result}.ngc path not found')
+                    INFO.check_known_paths(result+'.ngc', show=True)
+            except Exception as e:
+                print(e)
+            # run command
             self.cmd.mdi('%s' % code)
 
     def CALL_OWORD(self, code, time=5):
@@ -1110,6 +1124,16 @@ class _Lcnc_Action(object):
         # clean up return method variable
         self._touchoff_return = None
         self._touchoff_error_return = None
+
+    def extract_oword_basename(self, code):
+        tst = code.replace(' ','')
+        if 'o<' in tst:
+            ci = code.find('<')
+            result = code[ci + 1:]
+            ci = result.find('>')
+            result = result[:ci]
+            return result
+        return None
 
     #------- boiler code
 

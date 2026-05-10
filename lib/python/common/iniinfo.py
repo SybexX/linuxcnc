@@ -100,8 +100,6 @@ class _IStat(object):
             for mpath in (self.USER_M_PATH.split(':')):
                 self.USER_M_PATH_LIST.append(mpath)
 
-        self.INI_MACROS = self.INI.findall("DISPLAY", "MACRO")
-
         self.NGC_SUB_PATH = self.INI.getstring("DISPLAY","NGCGUI_SUBFILE_PATH") # or None
         if not self.NGC_SUB_PATH is None:
             self.NGC_SUB_PATH = os.path.expanduser(self.NGC_SUB_PATH)
@@ -618,6 +616,72 @@ class _IStat(object):
             except Exception as e:
                 LOG.error('INI MDI command parse error:{}'.format(e))
 
+        ################
+        # MACRO commands #
+        ################
+        # users can specify a label for the MACRO action button by adding ',Some\nText'
+        # to the end of the MACRO command
+        # here we separate them to two lists (legacy) and one dict
+        # action_button takes it from there.
+        self.MACRO_COMMAND_DICT={}
+        self.MACRO_COMMAND_LIST = []
+        self.MACRO_COMMAND_LABEL_LIST = []
+
+        # get raw data
+        self.INI_MACROS = self.INI.findall("MACROS", "MACRO") or None
+        if self.INI_MACROS is None:
+            # qtvcp legacy
+            self.INI_MACROS = self.INI.findall("DISPLAY", "MACRO") or None
+
+        # suppress error message if there is no section at all
+        if not self.INI_MACROS is None:
+            try:
+                for key,value in self.INI.getvariables('MACROS'):
+                    # legacy way: list of repeat 'MACRO=XXXX'
+                    # in this case order matters in the INI
+                    if key == 'MACRO':
+                        LOG.verbose("INI file's MACRO list is using legacy 'MACRO=' entries")
+                        temp = (self.INI.findall("MACROS", "MACRO")) or None
+                        if temp is None:
+                            self.MACRO_COMMAND_LIST.append(None)
+                            self.MACRO_COMMAND_LABEL_LIST.append(None)
+                        else:
+                            for count, i in enumerate(temp):
+                                datadict = {}
+                                for num,k in enumerate(i.split(',')):
+                                    if num == 0:
+                                        self.MACRO_COMMAND_LIST.append(k)
+                                        datadict['cmd'] = k
+                                        if len(i.split(',')) <2:
+                                            self.MACRO_COMMAND_LABEL_LIST.append(None)
+                                            datadict['label'] = None
+                                    else:
+                                        self.MACRO_COMMAND_LABEL_LIST.append(k)
+                                        datadict['label'] = k
+                                self.MACRO_COMMAND_DICT[str(count)] = datadict
+                        break
+
+                    # new way: 'MACRO_COMMAND_SSS = XXXX' (SSS being any string)
+                    # order of commands doesn't matter in the INI
+                    else:
+                        self.MACRO_COMMAND_LIST.append(None)
+                        self.MACRO_COMMAND_LABEL_LIST.append(None)
+                        try:
+                            name = (key.replace('MACRO_COMMAND_',''))
+                            mdidatadict = {}
+                            for num,k in enumerate(value.split(',')):
+                                if num == 0:
+                                    mdidatadict['cmd'] = k
+                                    if len(value.split(',')) <2:
+                                        mdidatadict['label'] = None
+                                else:
+                                    mdidatadict['label'] = k
+                            self.MACRO_COMMAND_DICT[name] = mdidatadict
+                        except Exception as e:
+                            LOG.error('INI MDI command parse error:{}'.format(e))
+            except Exception as e:
+                LOG.error('INI MACRO command parse error:{}'.format(e))
+
         self.TOOL_FILE_PATH = self.get_error_safe_setting("EMCIO", "TOOL_TABLE")
         self.POSTGUI_HALFILE_PATH = (self.INI.findall("HAL", "POSTGUI_HALFILE")) or None
         self.POSTGUI_HAL_COMMANDS = (self.INI.findall("HAL", "POSTGUI_HALCMD")) or None
@@ -784,21 +848,44 @@ class _IStat(object):
     # is an existing path (meaning linuxcnc can find it)
     # fname should just be the filename
     # returns the full path or None
-    def check_known_paths(self,fname, prefix = True, sub=True, user_m=True):
+    def check_known_paths(self,fname, prefix = True, sub=True, user_m=True, show=False):
         fname = os.path.split(fname)[1]
+
+        if show:
+            LOG.warning(f'Checking known paths for :{fname}')
+
         if prefix:
-            path = os.path.join(self.PROGRAM_PREFIX,fname)
+            path = os.path.expanduser(os.path.join(self.PROGRAM_PREFIX,fname))
+            if show:
+                LOG.warning(f'Program Prefix: {path}')
             if os.path.exists(path): return path
+        if show:
+            LOG.warning('No Program Prefix path matches in INI')
+
         if sub:
             for i in self.SUB_PATH_LIST:
                 path = os.path.expanduser(os.path.join(i,fname))
+                if show:
+                    LOG.warning(f'Subprogram path: {path}')
                 if os.path.exists(path):
                     return path
+            else:
+                if show:
+                    LOG.warning('No Subprogram path matches in INI')
+
         if user_m:
             for i in self.USER_M_PATH_LIST:
                 path = os.path.expanduser(os.path.join(i,fname))
+                if show:
+                    LOG.warning(f'User M path: {path}')
                 if os.path.exists(path):
                     return path
+            else:
+                if show:
+                    LOG.warning('No User M path matches in INI')
+
+        if show:
+            LOG.error('No known path match found')
         return None
 
     # same as above but just return True or False
@@ -841,6 +928,42 @@ class _IStat(object):
             try:
                 # should fail if not int
                 return self.MDI_COMMAND_LABEL_LIST[key]
+            except:
+                return None
+
+    def get_ini_macro_command(self, key):
+        """ returns A MACRO command string from the INI heading [MACROS] or None
+
+        key -- can be a integer or a string
+        using an integer is the legacy way to refer to the nth line.
+        using a string will refer to the specific command regardless what line 
+        it is on."""
+        try:
+            # should fail if not string
+            return self.MACRO_COMMAND_DICT[key]['cmd']
+        except:
+            # fallback to legacy variable
+            try:
+                # should fail if not int
+                return self.MACRO_COMMAND_LIST[key]
+            except:
+                return None
+
+    def get_ini_macro_label(self, key):
+        """ returns A MACRO label string from the INI heading [MACROS] or None
+
+        key -- can be a integer or a string
+        Using an integer is the legacy way to refer to the nth line in the INI.
+        Using a string will refer to the specific command regardless of what line 
+        it is on."""
+        try:
+            # should fail if not string
+            return self.MACRO_COMMAND_DICT[key]['label']
+        except:
+            # fallback to legacy variable
+            try:
+                # should fail if not int
+                return self.MACRO_COMMAND_LABEL_LIST[key]
             except:
                 return None
 

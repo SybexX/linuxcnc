@@ -116,7 +116,8 @@ All `<options>` must appear before `<screen_name>`.
 * `--push_xid` Send QtVCP's X11 window id number to standard output; for embedding.
 * `-u USERMOD` File path of a substitute handler file.
 * `-o USEROPTS` Pass a string to QtVCP's handler file under `self.w.USEROPTIONS_` list variable. Can be multiple -o.
-
+* `-force_pyqt=6` Forces QtVCP to use PyQt6, if it's availble, otherwise uses PyQt5
+ 
 .<screen_name>
 `<screen_name>` is the _base name of the .ui and _handler.py files_.
 If `<screen_name>` is missing, the default screen will be loaded.

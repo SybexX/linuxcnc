@@ -21,7 +21,7 @@ import hal
 from qtpy.QtWidgets import (QMessageBox, QFileDialog,
         QDialog, QDialogButtonBox, QVBoxLayout, QPushButton, QHBoxLayout,
         QHBoxLayout, QLineEdit, QPushButton, QDialogButtonBox, QTabWidget,
-        QTextEdit,QLabel)
+        QTextEdit,QLabel, QApplication)
 from qtpy.QtGui import QColor
 from qtpy.QtCore import Qt, Slot, Property, QEvent, QUrl
 from qtpy import uic
@@ -1735,6 +1735,8 @@ class CalculatorDialog(Calculator, GeometryMixin):
         self._nblock = False
         self._message = None
         self._overlay = None
+        self._flag = False
+        self._result = False
         self.setWindowFlags(self.windowFlags() | Qt.Tool |
                             Qt.Dialog | Qt.WindowStaysOnTopHint |
                             Qt.WindowSystemMenuHint)
@@ -1804,7 +1806,14 @@ class CalculatorDialog(Calculator, GeometryMixin):
         if preload is not None:
             self.display.setText(str(preload))
 
-    def showdialog(self, preload=None, overlay=True, cycle=False):
+    def getValue(self, title=''):
+        self._title = title
+        self._nblock = True
+        geo = 'CalculatorDialog-geometry'
+        self.read_preference_geometry(geo)
+        return self.showdialog(preload=None, overlay=False, cycle=False, wait=True)
+
+    def showdialog(self, preload=None, overlay=True, cycle=False, wait=False):
         self.setWindowTitle(self._title)
         if self.play_sound:
             STATUS.emit('play-sound', self.sound_type)
@@ -1819,16 +1828,24 @@ class CalculatorDialog(Calculator, GeometryMixin):
 
         if self._nblock:
             self.show()
+            if wait:
+                self._flag = True
+                while self._flag:
+                    QApplication.processEvents()
+                return (self.display.text(), self._result)
         else:
             if overlay:
                 STATUS.emit('focus-overlay-changed', True, '', self._color)
             retval = self.exec()
             if overlay:
                 STATUS.emit('focus-overlay-changed', False, None, None)
+ 
 
     def accept(self):
         self.record_geometry()
         super(CalculatorDialog, self).accept()
+        self._result = True
+        self._flag = False
         try:
             num =  float(self.display.text())
             LOG.debug('Displayed value when accepted: {}'.format(num))
@@ -1843,10 +1860,13 @@ class CalculatorDialog(Calculator, GeometryMixin):
     def reject(self):
         self.record_geometry()
         super(CalculatorDialog, self).reject()
-        self._message['RETURN'] = None
-        self._message['NEXT'] = False
-        STATUS.emit('general', self._message)
-        self._message = None
+        self._result = False
+        self._flag = False
+        if self._message is not None:
+            self._message['RETURN'] = None
+            self._message['NEXT'] = False
+            STATUS.emit('general', self._message)
+            self._message = None
 
     # used for cycling between different widgets.
     # the actual cycling is done in the calling code
@@ -1875,6 +1895,7 @@ class CalculatorDialog(Calculator, GeometryMixin):
     # used to apply and then cycle to the next widget.
     # the actual cycling is done in the calling code
     def applyAction(self):
+        self._flag = False
         try:
             num =  float(self.display.text())
             if self._message is not None:

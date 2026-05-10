@@ -226,7 +226,7 @@ class MachineLog(QWidget, _HalWidgetBase):
         if str(logText, encoding='utf8') == "":
             self.logText.setPlainText('No Logging found. Is QtVcp in info, debugging or verbose mode (-i, -d or -v)?')
             return
-        self.logText.setPlainText(str(logText, encoding='utf8'))
+        self.logText.setHtml(str(logText, encoding='utf8'))
         # scroll down to show last entry
         self.logText.verticalScrollBar().setSliderPosition(self.logText.verticalScrollBar().maximum())
 

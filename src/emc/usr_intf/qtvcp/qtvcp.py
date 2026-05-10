@@ -8,6 +8,10 @@ import hal
 import signal
 import subprocess
 
+
+if '--force_pyqt=6' in sys.argv:
+    os.environ["QT_API"] = "pyqt6"
+
 from optparse import Option, OptionParser
 from qtpy import QtWidgets, QtCore, QtGui
 
@@ -51,6 +55,8 @@ use -g WIDTHxHEIGHT for just setting size or -g +XOFFSET+YOFFSET for just positi
           , Option( '-u', dest='usermod', default="", help='file path of user defined handler file')
           , Option( '-o', dest='useropts', action='append', metavar='USEROPTS', default=[]
                   , help='pass USEROPTS strings to handler under self.w.USEROPTIONS_ list variable')
+          , Option( '--force_pyqt', dest='force_version', default="5"
+                  , help="You can force PyQt version 5 or 6 as available")
           ]
 
 from qtpy.QtCore import QObject, QEvent, Signal
