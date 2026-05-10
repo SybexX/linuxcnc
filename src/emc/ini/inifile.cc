@@ -31,6 +31,8 @@
 // FIXME: we don't want to pull in libnml.so
 //#include "libnml/rcs/rcs_print.hh"
 
+#include "nml_intf/emc.hh"
+
 #include "inifile.hh"
 
 using namespace linuxcnc;
@@ -1478,6 +1480,58 @@ int IniFile::tildeExpand(const std::string &path, std::string &result)
 
 	result = std::string(home) + path.substr(1);
 	return 0;
+}
+
+//
+//*****************************************************************************
+// Helper function - mapping enumerated types
+//*****************************************************************************
+//
+std::optional<double> IniFile::mapLinearUnits(const std::string &str)
+{
+	// The const map holds pairs for linear units which are valid under the
+	// [TRAJ] section. These are of the form {"name", value}.
+	// If the name "name" is encountered in the INI, the value will be used.
+	static const std::map<const std::string, const double, IniFile::caseless> linearUnitsMap = {
+		{ "mm",         1.0 },
+		{ "metric",     1.0 },
+		{ "in",         1/25.4 },
+		{ "inch",       1/25.4 },
+		{ "imperial",   1/25.4 },
+	};
+	if(auto c = IniFile::mapMap(linearUnitsMap, str))
+		return *c;
+	return std::nullopt;
+}
+
+std::optional<double> IniFile::mapAngularUnits(const std::string &str)
+{
+	// The const map holds pairs for angular units which are valid under
+	// the [TRAJ] section. These are of the form {"name", value}.
+	// If the name "name" is encountered in the INI, the value will be used.
+	static const std::map<const std::string, const double, IniFile::caseless> angularUnitsMap = {
+		{ "deg",        1.0 },
+		{ "degree",     1.0 },
+		{ "grad",       0.9 },
+		{ "gon",        0.9 },
+		{ "rad",        M_PI / 180.0 },
+		{ "radian",     M_PI / 180.0 },
+	};
+	if(auto c = IniFile::mapMap(angularUnitsMap, str))
+		return *c;
+	return std::nullopt;
+}
+
+std::optional<EmcJointType> IniFile::mapJointType(const std::string &str)
+{
+	// Usually found in [JOINT_*]TYPE and [AXIS_*]TYPE
+	static const std::map<const std::string, const EmcJointType, IniFile::caseless> jointTypeMap = {
+		{ "LINEAR",  EMC_LINEAR },
+		{ "ANGULAR", EMC_ANGULAR}
+	};
+	if(auto c = IniFile::mapMap(jointTypeMap, str))
+		return *c;
+	return std::nullopt;
 }
 
 //

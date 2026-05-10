@@ -34,43 +34,6 @@ static void inline print_dbg_config(const std::string &s)
     }
 }
 
-static double findLinearUnits(const IniFile &ini, const std::string &var, const std::string &sec, double def)
-{
-    // The const map holds pairs for linear units which are valid under the
-    // [TRAJ] section. These are of the form {"name", value}.
-    // If the name "name" is encountered in the INI, the value will be used.
-    static const std::map<const std::string, const double> linearUnitsMap = {
-        { "mm",         1.0 },
-        { "metric",     1.0 },
-        { "in",         1/25.4 },
-        { "inch",       1/25.4 },
-        { "imperial",   1/25.4 },
-    };
-
-    if(auto c = ini.findMap(linearUnitsMap, var, sec))
-        return *c;
-    return def;
-}
-
-static double findAngularUnits(const IniFile &ini, const std::string &var, const std::string &sec, double def)
-{
-    // The const map holds pairs for angular units which are valid under
-    // the [TRAJ] section. These are of the form {"name", value}.
-    // If the name "name" is encountered in the INI, the value will be used.
-    static const std::map<const std::string, const double, IniFile::caseless> angularUnitsMap = {
-        { "deg",        1.0 },
-        { "degree",     1.0 },
-        { "grad",       0.9 },
-        { "gon",        0.9 },
-        { "rad",        M_PI / 180.0 },
-        { "radian",     M_PI / 180.0 },
-    };
-
-    if(auto c = ini.findMap(angularUnitsMap, var, sec))
-        return *c;
-    return def;
-}
-
 //
 // loadKins()
 //
@@ -139,8 +102,8 @@ static int loadTraj(const IniFile &ini)
     }
 
 
-    double linearUnits  = findLinearUnits(ini, "LINEAR_UNITS", "TRAJ", 0.0);
-    double angularUnits = findAngularUnits(ini, "ANGULAR_UNITS", "TRAJ", 0.0);
+    double linearUnits  = ini.findLinearUnits("LINEAR_UNITS", "TRAJ", 0.0);
+    double angularUnits = ini.findAngularUnits("ANGULAR_UNITS", "TRAJ", 0.0);
     if (0 != emcTrajSetUnits(linearUnits, angularUnits)) {
         rcs_print("emcTrajSetUnits failed to set [TRAJ]LINEAR_UNITS or [TRAJ]ANGULAR_UNITS\n");
         return -1;

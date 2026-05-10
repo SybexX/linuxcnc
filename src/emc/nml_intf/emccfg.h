@@ -69,6 +69,10 @@ extern const char * DEFAULT_EMC_NMLFILE;
  */
 #define DEFAULT_JOINT_MAX_JERK 0.0
 
+/* default joint limits in either direction */
+#define DEFAULT_JOINT_MIN_LIMIT (-1e99)
+#define DEFAULT_JOINT_MAX_LIMIT (1e99)
+
 /* default axis velocity, in user units per second */
 #define DEFAULT_AXIS_MAX_VELOCITY 1.0
 
@@ -81,6 +85,10 @@ extern const char * DEFAULT_EMC_NMLFILE;
  * Typical values: 100-10000 depending on machine rigidity and axis inertia
  */
 #define DEFAULT_AXIS_MAX_JERK 0.0
+
+/* default axis limits in either direction */
+#define DEFAULT_AXIS_MIN_LIMIT (-1e99)
+#define DEFAULT_AXIS_MAX_LIMIT (1e99)
 
 #ifdef __cplusplus
 }				/* matches extern "C" at top */

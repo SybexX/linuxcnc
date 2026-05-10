@@ -62,7 +62,7 @@ static int loadAxis(int axis, const IniFile &ini)
     std::string axisSection = fmt::format("AXIS_{}", "XYZABCUVW"[axis]);
 
     // set min position limit
-    double limit = ini.findRealV("MIN_LIMIT", axisSection, -1e99);
+    double limit = ini.findRealV("MIN_LIMIT", axisSection, DEFAULT_AXIS_MIN_LIMIT);
     if (0 != emcAxisSetMinPositionLimit(axis, limit)) {
         print_dbg_config("emcAxisSetMinPositionLimit");
         return -1;
@@ -70,7 +70,7 @@ static int loadAxis(int axis, const IniFile &ini)
     old_inihal_data.axis_min_limit[axis] = limit;
 
     // set max position limit
-    limit = ini.findRealV("MAX_LIMIT", axisSection, 1e99);
+    limit = ini.findRealV("MAX_LIMIT", axisSection, DEFAULT_AXIS_MAX_LIMIT);
     if (0 != emcAxisSetMaxPositionLimit(axis, limit)) {
         print_dbg_config("emcAxisSetMaxPositionLimit");
         return -1;

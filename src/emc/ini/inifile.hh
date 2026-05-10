@@ -126,6 +126,10 @@
 //	}
 //
 
+// Forward declaration (must be outside namespace)
+// This is found in emc/nml_intf/emc.hh
+enum EmcJointType : int;
+
 namespace linuxcnc {
 
 // Forward declaration of internal classes
@@ -341,6 +345,62 @@ public:
 		std::optional<T> findMap(const std::map<const std::string, const T, caseless> &map,
 								 const std::string &tag, const std::string &section = "") const {
 		return findMap(1, map, tag, section);
+	}
+
+	template<typename T>
+		std::optional<T> static mapMap(const std::map<const std::string, const T, caseless> &map,
+								 const std::string &str) {
+		auto const m = map.find(str);
+		if(m != map.end()) {
+			return m->second;
+		}
+		return std::nullopt;
+	}
+
+	//
+	// Mapping functions for enumerated types so they become consistent
+	// throughout the code base. They take a string argument and match it to
+	// the mapped values:
+	// - mapLinearUnits()  maps {mm, metric, in, inch, imperial}
+	// - mapAngularUnits() maps {deg, degree, grad, gon, rad, radian}
+	// - mapJointType()    maps {LINEAR, ANGULAR}
+	//
+	static std::optional<double> mapLinearUnits(const std::string &str);
+	static std::optional<double> mapAngularUnits(const std::string &str);
+	static std::optional<EmcJointType> mapJointType(const std::string &str);
+
+	// The following find*() both lookup the ini variable and attempt to
+	// convert to the associated numerical value.
+	std::optional<double> findLinearUnits(int num, const std::string &var, const std::string &sec) const {
+		if(auto c = findString(num, var, sec))
+			return mapLinearUnits(*c);
+		return std::nullopt;
+	}
+	std::optional<double> findAngularUnits(int num, const std::string &var, const std::string &sec) const {
+		if(auto c = findString(num, var, sec))
+			return mapAngularUnits(*c);
+		return std::nullopt;
+	}
+	std::optional<EmcJointType> findJointType(int num, const std::string &var, const std::string &sec) const {
+		if(auto c = findString(num, var, sec))
+			return mapJointType(*c);
+		return std::nullopt;
+	}
+
+	double findLinearUnits(const std::string &var, const std::string &sec, double def) const {
+		if(auto m = findLinearUnits(1, var, sec))
+			return *m;
+		return def;
+	}
+	double findAngularUnits(const std::string &var, const std::string &sec, double def) const {
+		if(auto m = findAngularUnits(1, var, sec))
+			return *m;
+		return def;
+	}
+	EmcJointType findJointType(const std::string &var, const std::string &sec, EmcJointType def) const {
+		if(auto m = findJointType(1, var, sec))
+			return *m;
+		return def;
 	}
 
 	// Return a list of section names from the ini-file

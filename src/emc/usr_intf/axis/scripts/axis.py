@@ -3377,13 +3377,6 @@ root_window.bind("<FocusOut>", lambda e: str(e.widget) == "." and jog_off_all())
 
 open_directory = "programs"
 
-unit_values = {'inch': 1/25.4, 'mm': 1}
-def units(s, d=1.0):
-    try:
-        return float(s)
-    except ValueError:
-        return unit_values.get(s, d)
-
 random_toolchanger = inifile.getbool("EMCIO", "RANDOM_TOOLCHANGER", fallback=False)
 vars.emcini.set(sys.argv[2])
 jointcount = inifile.getint("KINS", "JOINTS", fallback=0)
@@ -3556,10 +3549,13 @@ tooleditor = inifile.getstring("DISPLAY","TOOL_EDITOR", fallback=default_tooledi
 
 if inifile.find("RS274NGC", "PARAMETER_FILE") is None:
     raise SystemExit("Missing INI file setting for [RS274NGC]PARAMETER_FILE")
-try:
-    lu = units(inifile.find("TRAJ", "LINEAR_UNITS"))
-except TypeError:
-    raise SystemExit("Missing [TRAJ]LINEAR_UNITS or ANGULAR_UNITS")
+# FIXME: The GUI is apparently fixed to work in degrees only and doesn't even
+# read [TRAJ]ANGULAR_UNITS. The GUI should support all angular units.
+if not inifile.hasvariable("TRAJ", "LINEAR_UNITS"):
+    raise SystemExit("Missing [TRAJ]LINEAR_UNITS")
+lu = inifile.getlinearunits("TRAJ", "LINEAR_UNITS")
+if None == lu:
+    raise SystemExit("Invalid [TRAJ]LINEAR_UNITS")
 a_axis_wrapped = inifile.getbool("AXIS_A", "WRAPPED_ROTARY", fallback=False)
 b_axis_wrapped = inifile.getbool("AXIS_B", "WRAPPED_ROTARY", fallback=False)
 c_axis_wrapped = inifile.getbool("AXIS_C", "WRAPPED_ROTARY", fallback=False)
@@ -3734,8 +3730,7 @@ for a in range(linuxcnc.MAX_AXIS):
     a = "XYZABCUVW"[a]
     if s.axis_mask & (1<<i) == 0: continue
     section = "AXIS_%s" % a
-    unit = inifile.getstring(section, "UNITS", fallback=lu)
-    unit = units(unit) * 25.4
+    unit = inifile.getlinearunits(section, "UNITS", fallback=lu) * 25.4
     f = inifile.find(section, "SCALE") or inifile.find(section, "INPUT_SCALE") or "8000"
     try:
         f = abs(float(f.split()[0]))

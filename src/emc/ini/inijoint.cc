@@ -33,17 +33,6 @@ static void inline print_dbg_config(const std::string &s)
     }
 }
 
-static EmcJointType getJointType(const IniFile &ini, const std::string &var, const std::string &sec, EmcJointType def)
-{
-	static const std::map<const std::string, const EmcJointType, IniFile::caseless> jointTypeMap = {
-		{"LINEAR",  EMC_LINEAR },
-		{"ANGULAR", EMC_ANGULAR}
-	};
-	if(auto c = ini.findMap(jointTypeMap, var, sec))
-		return *c;
-	return def;
-}
-
 //
 // Load INI file params for joint
 //
@@ -78,7 +67,7 @@ static int loadJoint(int joint, const IniFile &ini)
 {
     std::string jointSection = fmt::format("JOINT_{}", joint);
 
-    EmcJointType jointType = getJointType(ini, "TYPE", jointSection, EMC_LINEAR);
+    EmcJointType jointType = ini.findJointType("TYPE", jointSection, EMC_LINEAR);
     if (0 != emcJointSetType(joint, jointType)) {
         print_dbg_config("emcJointSetType");
         return -1;
@@ -102,14 +91,14 @@ static int loadJoint(int joint, const IniFile &ini)
     }
     old_inihal_data.joint_backlash[joint] = backlash;
 
-    double limit = ini.findRealV("MIN_LIMIT", jointSection, -1e99);
+    double limit = ini.findRealV("MIN_LIMIT", jointSection, DEFAULT_JOINT_MIN_LIMIT);
     if (0 != emcJointSetMinPositionLimit(joint, limit)) {
         print_dbg_config("emcJointSetMinPositionLimit");
          return -1;
     }
     old_inihal_data.joint_min_limit[joint] = limit;
 
-    limit = ini.findRealV("MAX_LIMIT", jointSection, 1e99);
+    limit = ini.findRealV("MAX_LIMIT", jointSection, DEFAULT_JOINT_MAX_LIMIT);
     if (0 != emcJointSetMaxPositionLimit(joint, limit)) {
         print_dbg_config("emcJointSetMaxPositionLimit");
         return -1;

@@ -46,7 +46,6 @@ In this list, the DISPLAY variable will be set to axis because the other one is 
 If someone carelessly edits a list like this and leaves two of the lines uncommented, the first one encountered will be used.
 
 Note that inside a variable's value, the "#" and ";" characters are part of the value:
-
 [source,{ini}]
 ----
 # Below does not result in INCORRECT=value
@@ -116,26 +115,26 @@ ini.1.max_velocity \
 ini.2.max_velocity
 ----
 
-A specific variable in a specific sections is often denoted in the documentation as [SECTION]VARIABLE.
+A specific variable in a specific sections is often denoted in the documentation as `[SECTION]VARIABLE`.
 This specification mirrors the same way they are specified in HAL files for expansion.
 
 Variable values may embed special characters in literal or escaped forms.
 Single or double quotes are not treated as special and are a literal part of the value.
 Values also support all common escape formats and full Unicode:
 
-* control: \\[abfnrtv]
-* octal: \\[0-2][0-7]{0,2}
-* hex: \\x[0-9a-fA-F]{2}
-* UTF-16: \\u[0-9a-fA-F]{4}
-* UTF-32: \\U[0-9a-fA-F]{8}
+* control: `\[abfnrtv]`
+* octal: `\[0-2][0-7]{0,2}`
+* hex: `\x[0-9a-fA-F]{2}`
+* UTF-16: `\u[0-9a-fA-F]{4}`
+* UTF-32: `\U[0-9a-fA-F]{8}`
 
 The resulting value is always converted into UTF-8 and checked for validity.
 It is not allowed to embed NUL characters either literally or by using an escape.
 
 Leading and trailing white space is normally removed from a value.
-You can add leading and trailing space in a value by using an escaped value for space (\\x20) as first or last character.
+You can add leading and trailing space in a value by using an escaped value for space (`\x20`) as first or last character.
 Spaces inside a value are automatically part of the value.
-Tabs and newlines can be added using \\t and \\n.
+Tabs and newlines can be added using `\t` and `\n`.
 
 .Value Escape Example
 [source,{ini}]
@@ -148,10 +147,10 @@ STRING = Hello\
 World\
 !
 
-SMILE = \\370\\237\\230\\200 = 😀
-SMILE = \\xf0\\x9f\\x98\\x80 = 😀
-SMILE = \\ud83d\\ude00 = 😀
-SMILE = \\U0001f600 = 😀
+SMILE = \370\237\230\200 = 😀
+SMILE = \xf0\x9f\x98\x80 = 😀
+SMILE = \ud83d\ude00 = 😀
+SMILE = \U0001f600 = 😀
 ----
 
 Variables' value can have types associated when they are read by LinuxCNC.
@@ -171,18 +170,18 @@ Plain old 32-bit integers are marked `int` and are always signed.
 The default number base is decimal. Alternative bases may be specified using a prefix.
 The complete list of valid integer numbers:
 
-* \[0-9]+ - decimal
-* 0x\[0-9A-Fa-f]+ - hexadecimal
-* 0o\[0-7]+ - octal
-* 0b\[01]+ - binary
+* `[0-9]+` (decimal)
+* `0x[0-9A-Fa-f]+` (hexadecimal)
+* `0o[0-7]+` (octal)
+* `0b[01]+` (binary)
 
 Signed integers may be preceded by a plus (+) or minus (-) sign, regardless number base.
 Unsigned integers will generate a warning if they are preceded by a minus (-) sign upon conversion.
 
 Boolean values are case insensitive and allow the following words:
 
-* true/enabled - `TRUE`, `YES` `ON` or `1`
-* false/disabled - `FALSE`, `NO` `OFF` or `0`
+* true/enabled - `TRUE`, `YES`, `ON` or `1`
+* false/disabled - `FALSE`, `NO`, `OFF` or `0`
 
 Enumerations are a set of keywords defined by LinuxCNC and interpreted to mean a setting, value or functionality.
 The exact values are declared in the individual variable description and the variables are marked with `enum`.
@@ -253,7 +252,8 @@ G10 L20 P0 Z#<_ini[probe]z_offset>
 [[sub:ini:include]]
 === Include Files(((INI File,Components,Include)))
 
-An INI file may include the contents of another file by using a #INCLUDE directive.
+An INI file may include the contents of another file by using a `#INCLUDE` directive.
+The `#INCLUDE` directive must be in upper case, start in the first column of the line and have at least one space after it.
 
 .#INCLUDE Format
 [source,{ini}]
@@ -268,7 +268,7 @@ The filename can be specified as:
 * an absolute file name (starts with a /)
 * a user-home-relative file name (starts with a ~/)
 
-Multiple #INCLUDE directives are supported.
+Multiple `#INCLUDE` directives are supported.
 
 .#INCLUDE Examples
 [source,{ini}]
@@ -280,7 +280,7 @@ Multiple #INCLUDE directives are supported.
 #INCLUDE ~/linuxcnc/myincludes/rs274ngc.inc
 ----
 
-The #INCLUDE directives are supported up to 16 levels -- an included file may include additional files up to 16 levels deep.
+The `#INCLUDE` directives are supported up to 16 levels -- an included file may include additional files up to 16 levels deep.
 Recursive inclusion of files is detected and flagged as an error.
 The recommended file extension is '.inc'.
 Do _not_ use a file extension of '.ini' for included files.
@@ -331,12 +331,12 @@ Descriptions of the interfaces are in the Interfaces section of the User Manual.
   The example above will display only one decimal digit.
   Formatting follows Python practice: https://docs.python.org/2/library/string.html#format-specification-mini-language .
   An error will be raised if the format can not accept a floating-point value.
-* `CONE_BASESIZE = .25` - Override the default cone/tool base size of .5 in the graphics display. Valid values are between 0.025 and 2.0.
-* `DISABLE_CONE_SCALING = TRUE` - Any non-empty value (including "0") will override the default behavior of scaling the cone/tool size using the extents of the currently loaded G-code program in the graphics display.
-* `GCODE_VIEW_TOOL_MIN_DIA = 2.0` - If the tool diameter is very small, but non-zero then the displayed cylinder may be too small to see.
+* `CONE_BASESIZE = .25` - (real) Override the default cone/tool base size of .5 in the graphics display. Valid values are between 0.025 and 2.0.
+* `DISABLE_CONE_SCALING = TRUE` - (bool) Will override the default behavior of scaling the cone/tool size using the extents of the currently loaded G-code program in the graphics display.
+* `GCODE_VIEW_TOOL_MIN_DIA = 2.0` - (real) If the tool diameter is very small, but non-zero then the displayed cylinder may be too small to see.
    This could happen if the tool diameter was being used as a wear offset. This setting will cause the tool cone to be displayed
    rather than a tool cylinder.
-* `MAX_FEED_OVERRIDE = 1.2` - The maximum feed override the user may select.
+* `MAX_FEED_OVERRIDE = 1.2` - (real) The maximum feed override the user may select.
   1.2 means 120% of the programmed feed rate.
 * `MIN_SPINDLE_OVERRIDE = 0.5` - (real) The minimum spindle override the user may select.
   0.5 means 50% of the programmed spindle speed. (This is used to set the minimum spindle speed.)
@@ -373,7 +373,7 @@ Descriptions of the interfaces are in the Interfaces section of the User Manual.
   An under powered CPU may see improvement with a longer setting.
   Usually the default is fine.
 * `PREVIEW_TIMEOUT = 5` - Timeout (in seconds) for loading graphical preview of G-code. Currently AXIS only.
-* `HOMING_PROMPT = TRUE` - Any non-empty value (including "0") will enable showing a prompt message with homing request, when the Power On button is pressed in AXIS GUI. Pressing the "Ok" button in prompt message is equivalent to pressing the "Home All" button(or the Ctrl-HOME key).
+* `HOMING_PROMPT = TRUE` - (bool) Will enable showing a prompt message with homing request, when the Power On button is pressed in AXIS GUI. Pressing the "Ok" button in prompt message is equivalent to pressing the "Home All" button(or the Ctrl-HOME key).
 * `FOAM_W = 1.5` sets the foam W height.
 * `FOAM_Z = 0` sets the foam Z height.
 * `GRAPHICAL_MAX_FILE_SIZE = 20` largest size (in mega bytes) that will be displayed graphically.
@@ -425,9 +425,9 @@ See <<cha:gmoccapy,GMOCCAPY>> document for GMOCCAPY details.
 * `PYVCP_POSITION = BOTTOM` - The placement of the PyVCP panel in the AXIS user interface.
   If this variable is omitted the panel will default to the right side.
   The only valid alternative is `BOTTOM`. See the <<cha:pyvcp,PyVCP Chapter>> for more information.
-* `LATHE = 1` - Any non-empty value (including "0") causes axis to use "lathe mode" with a top view and with Radius and Diameter on the DRO.
-* `BACK_TOOL_LATHE = 1` - Any non-empty value (including "0") causes axis to use "back tool lathe mode" with inverted X axis.
-* `FOAM = 1` - Any non-empty value (including "0") causes axis to change the display for foam-cutter mode.
+* `LATHE = 1` - (bool) Causes axis to use "lathe mode" with a top view and with Radius and Diameter on the DRO.
+* `BACK_TOOL_LATHE = 1` - (bool) Causes axis to use "back tool lathe mode" with inverted X axis.
+* `FOAM = 1` - (bool) Causes axis to change the display for foam-cutter mode.
 * `GEOMETRY = XYZABCUVW` - Controls the *preview* and *backplot* of motion.
   This item consists of a sequence of axis letters and control characters, optionally preceded with a "-" sign:
 
@@ -805,26 +805,26 @@ The applications can be started after a specified delay to allow for GUI-depende
   If no executable file is found using these names, then the user search PATH is used to find the application. +
   Examples:
 ** Simulate inputs to HAL pins for testing (using sim_pin -- a simple GUI to set inputs to parameters, unconnected pins, or signals with no writers):
-+
+
 [source,{ini}]
 ----
 APP = sim_pin motion.probe-input halui.abort motion.analog-in-00
 ----
 ** Invoke halshow with a previuosly saved watchlist.
    Since LinuxCNC sets the working directory to the directory for the INI file, you can refer to files in that directory (example: my.halshow):
-+
+
 [source,{ini}]
 ----
 APP = halshow my.halshow
 ----
 ** Alternatively, a watchlist file identified with a full pathname could be specified:
-+
+
 [source,{ini}]
 ----
 APP = halshow ~/saved_shows/spindle.halshow
 ----
 ** Open halscope using a previously saved configuration:
-+
+
 [source,{ini}]
 ----
 APP = halscope -i my.halscope
@@ -846,9 +846,9 @@ ARC_BLEND_RAMP_FREQ = 100
 
 The [TRAJ] section contains general parameters for the trajectory planning module in 'motion'.
 
-* `ARC_BLEND_ENABLE = 1` - Turn on new TP.
+* `ARC_BLEND_ENABLE = 1` - (bool) Turn on new TP.
   If set to 0 TP uses parabolic blending (1 segment look ahead) (Default: 1).
-* `ARC_BLEND_FALLBACK_ENABLE = 0` - Optionally fall back to parabolic blends if the estimated speed is faster.
+* `ARC_BLEND_FALLBACK_ENABLE = 0` - (bool) Optionally fall back to parabolic blends if the estimated speed is faster.
   However, this estimate is rough, and it seems that just disabling it gives better performance (Default: 0).
 * `ARC_BLEND_OPTIMIZATION_DEPTH = 50` - Look ahead depth in number of segments.
 +
