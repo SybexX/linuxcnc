@@ -82,6 +82,9 @@ to another.
 #define MOTION_INVALID_ID INT_MIN
 #define MOTION_ID_VALID(x) ((x) != MOTION_INVALID_ID)
 
+#include <rtapi.h>		/* must precede rtapi_atomic.h in kernel mode */
+#include <rtapi_atomic.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -739,14 +742,12 @@ Suggestion: Split this in to an Error and a Status flag register..
         int inhibit_probe_home_error;
     } emcmot_config_t;
 
-/* error structure - A ring buffer used to pass formatted printf strings to usr space */
+/* error structure - lockfree MPSC ring buffer. See emcmotutil.c. */
     typedef struct emcmot_error_t {
-	unsigned char head;	/* flag count for mutex detect */
 	char error[EMCMOT_ERROR_NUM][EMCMOT_ERROR_LEN];
-	int start;		/* index of oldest error */
-	int end;		/* index of newest error */
-	int num;		/* number of items */
-	unsigned char tail;	/* flag count for mutex detect */
+	rtapi_atomic_ullong write_reserve;
+	rtapi_atomic_ullong write_commit;
+	rtapi_atomic_ullong read_seq;
     } emcmot_error_t;
 
 
