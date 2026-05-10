@@ -35,9 +35,15 @@
  *
 *************************************************************************/
  
-component message "Display a message";
- 
-description """Allows HAL pins to trigger a message. Example hal commands:
+component message "Display a message (deprecated, see pushmsg)";
+
+description """*DEPRECATED*: this component only emits at the ERROR level.
+For new configurations, use *pushmsg*(9) which supports all four
+`rtapi_print_msg()` levels (error, warning, info, debug), HAL value
+substitution into the message text, plus the same trigger/force/edge
+behaviour from a single `loadrt` line.
+
+Allows HAL pins to trigger a message. Example hal commands:
 
 [source,hal]
 ----
