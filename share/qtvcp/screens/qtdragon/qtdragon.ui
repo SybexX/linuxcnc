@@ -5800,7 +5800,7 @@ LOG</string>
                             <property name="geometry">
                              <rect>
                               <x>0</x>
-                              <y>0</y>
+                              <y>-351</y>
                               <width>306</width>
                               <height>734</height>
                              </rect>
@@ -6117,7 +6117,7 @@ LOG</string>
                                    </sizepolicy>
                                   </property>
                                   <property name="toolTip">
-                                   <string>Enable Webcam for work offset location</string>
+                                   <string>Automatically switch to MDI mode with external MDI requests</string>
                                   </property>
                                   <property name="text">
                                    <string>AUTO MODE SWITCH EXTERNAL MDI</string>
@@ -6136,7 +6136,7 @@ LOG</string>
                                    </sizepolicy>
                                   </property>
                                   <property name="toolTip">
-                                   <string>Enable Webcam for work offset location</string>
+                                   <string>Automatically switch to MDI mode with MDI buttons</string>
                                   </property>
                                   <property name="text">
                                    <string>AUTO MODE SWITCH MACRO BUTTONS</string>
@@ -18142,7 +18142,7 @@ SCROLL</string>
              <number>2</number>
             </property>
             <property name="text">
-             <string>09:43:52 PM</string>
+             <string>08:51:28 PM</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
