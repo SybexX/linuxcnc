@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: emc-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2026-04-16 19:18+0200\n"
 "PO-Revision-Date: 2026-05-14 09:29+0000\n"
-"Last-Translator: taotieren <admin@taotieren.com>\n"
+"Last-Translator: Hans Unzner <hansunzner@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "linuxcnc/gmocappy/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -1698,7 +1698,6 @@ msgid "<b>Probe velocities</b>"
 msgstr "<b>探测速度</b>"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:191
-#, fuzzy
 msgid ""
 "No valid configuration\n"
 "found in your INI file,\n"
@@ -1718,7 +1717,6 @@ msgid "Reload Tool on Start"
 msgstr "启动时重新加载刀具"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:198
-#, fuzzy
 msgid ""
 "If checked, the tool in spindle\n"
 "will be saved on each change\n"
@@ -1732,7 +1730,6 @@ msgstr ""
 "同时，它的长度偏移也将被重新加载。\n"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:204
-#, fuzzy
 msgid ""
 "You use NO_FORCE_HOMING,\n"
 "so the reload of a tool at start\n"
