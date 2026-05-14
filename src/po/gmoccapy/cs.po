@@ -11,7 +11,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: emc-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2026-04-16 19:18+0200\n"
 "PO-Revision-Date: 2026-05-14 09:29+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Last-Translator: Zdenek Z <zz912@seznam.cz>\n"
 "Language-Team: \n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
@@ -52,6 +52,7 @@ msgid "Important change(s)"
 msgstr "Důležité změny"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.py:548
+#, fuzzy
 msgid ""
 "<b>3.5.0 (LinuxCNC 2.10.0): Gmoccapy does no longer automatically retain G43 "
 "after a toolchange!</b>\n"
@@ -1656,6 +1657,7 @@ msgid "Scale spindle override"
 msgstr "Vřeteno"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:174
+#, fuzzy
 msgid "<b>Hardware MPG Scale</b>"
 msgstr ""
 "<b>Fyzický MPG ovladač\n"
@@ -1755,6 +1757,7 @@ msgstr ""
 "při startu"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:198
+#, fuzzy
 msgid ""
 "If checked, the tool in spindle\n"
 "will be saved on each change\n"
@@ -1834,6 +1837,7 @@ msgstr ""
 "[F3]"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:218
+#, fuzzy
 msgid ""
 "enter MDI mode to launch G-code commands\n"
 "[F5]"
@@ -1923,6 +1927,7 @@ msgid "Run the  loaded program step by step"
 msgstr "spustit načtený program řádek po řádku"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:238
+#, fuzzy
 msgid ""
 "run the program from a certain line, attention, that is dangerous, because "
 "the previous lines will not checked!"
@@ -1963,6 +1968,7 @@ msgstr ""
 "MDI historii"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:245
+#, fuzzy
 msgid "Cl.-ladder"
 msgstr ""
 "PLC\n"
