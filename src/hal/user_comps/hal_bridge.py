@@ -90,6 +90,10 @@ class Bridge(object):
         self.cycle_start.pinValueChanged.connect(self.pinChanged)
         self.cycle_pause = QHAL.newpin('cycle-pause-in',QHAL.HAL_BIT, QHAL.HAL_IN)
         self.cycle_pause.pinValueChanged.connect(self.pinChanged)
+        self.reload_display = QHAL.newpin('reload-display-in',QHAL.HAL_BIT, QHAL.HAL_IN)
+        self.reload_display.pinValueChanged.connect(self.pinChanged)
+        self.shutdown = QHAL.newpin('shutdown-in',QHAL.HAL_BIT, QHAL.HAL_IN)
+        self.shutdown.pinValueChanged.connect(self.pinChanged)
 
         if not self.INFO.MDI_COMMAND_DICT is None:
             for i in self.INFO.MDI_COMMAND_DICT:
@@ -159,7 +163,7 @@ class Bridge(object):
                 self['Axis{}IsSelected'.format(i.lower())].set(state)
 
     # send msg to hal_glib
-    def writeMsg(self, msg, data):
+    def writeMsg(self, msg, data=''):
         if ZMQ:
             topic = self.writeTopic
             message = json.dumps({'FUNCTION':msg,'ARGS':data})
@@ -203,6 +207,15 @@ class Bridge(object):
        # angular jog rate
         elif self.jogRateAngularIn == pinObject:
                 self.writeMsg('set_jograte_angular', value)
+
+        elif self.reload_display == pinObject:
+            if bool(value):
+                #print('reload')
+                self.writeMsg('request_reload_display', value)
+
+        elif self.shutdown == pinObject:
+            if bool(value):
+                self.writeMsg('request_shutdown')
 
         # catch all default
         else:
