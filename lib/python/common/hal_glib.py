@@ -236,6 +236,7 @@ class _GStat(GObject.GObject):
                                         (GObject.TYPE_STRING, GObject.TYPE_BOOLEAN)),
         'show-preference': (GObject.SignalFlags.RUN_FIRST , GObject.TYPE_NONE, ()),
         'shutdown': (GObject.SignalFlags.RUN_FIRST , GObject.TYPE_NONE, ()),
+        'shutdown-request': (GObject.SignalFlags.RUN_FIRST , GObject.TYPE_NONE, ()),
         'status-message': (GObject.SignalFlags.RUN_FIRST , GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT, GObject.TYPE_PYOBJECT)),
         'error': (GObject.SignalFlags.RUN_FIRST , GObject.TYPE_NONE, (GObject.TYPE_INT, GObject.TYPE_STRING)),
         'general': (GObject.SignalFlags.RUN_FIRST , GObject.TYPE_NONE, (GObject.TYPE_PYOBJECT,)),
@@ -406,10 +407,16 @@ class _GStat(GObject.GObject):
             function = y.get('FUNCTION')
             data = y.get('ARGS')
             LOG.debug('REQUESTED:{}'.format(y))
-            try:
-                self[function](data)
-            except Exception as e:
-                LOG.debug('not a valid request\n {}'.format(e))
+            if data == '':
+                try:
+                    self[function]()
+                except Exception as e:
+                    LOG.debug('not a valid request\n {}'.format(e))
+            else:
+                try:
+                    self[function](data)
+                except Exception as e:
+                    LOG.debug('not a valid request\n {}'.format(e))
             #self. action(y.get('MESSAGE'),y.get('ARGS'))
         return True
 
@@ -1460,6 +1467,11 @@ class _GStat(GObject.GObject):
     def request_macro_call(self, data):
         self.emit('macro-call-request', data)
 
+    def request_reload_display(self, data):
+        self.emit('reload-display')
+
+    def request_shutdown(self):
+        self.emit('shutdown-request')
     #############################################
 
     def shutdown(self):
