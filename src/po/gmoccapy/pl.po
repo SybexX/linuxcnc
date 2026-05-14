@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: emc-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2026-04-16 19:18+0200\n"
 "PO-Revision-Date: 2026-05-14 09:29+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Last-Translator: Hans Unzner <hansunzner@gmail.com>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/linuxcnc/gmocappy/"
 "pl/>\n"
 "Language: pl\n"
@@ -554,7 +554,6 @@ msgid "INFO:"
 msgstr "INFO:"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.py:4390
-#, fuzzy
 msgid "Classicladder real-time component not detected"
 msgstr "Nie znaleziono real-time component Classicladder."
 
@@ -669,7 +668,6 @@ msgid "Conversion error in btn_block_height!"
 msgstr "Błąd przekształcenia w btn_block_height!"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.py:5004
-#, fuzzy
 msgid ""
 "Please enter only numerical values\n"
 "Values have not been applied"
@@ -680,7 +678,7 @@ msgid "Please remove the mounted tool and press OK when done"
 msgstr "Usuń zamontowane narzędzie i kliknij OK"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.py:5572
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid ""
 "Please change to tool\n"
 "\n"
@@ -822,7 +820,6 @@ msgstr "Wprowadź tylko liczby całkowite"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.py:5691
 #: src/emc/usr_intf/gmoccapy/gmoccapy.py:5716
-#, fuzzy
 msgid "Selected tool is already in spindle, no change needed."
 msgstr "Wybrano bieżące narzędzie - wymiana niepotrzebna"
 
@@ -1093,7 +1090,6 @@ msgid "Information over the tool in spindle"
 msgstr "Informacja o narzędziu we wrzecionie"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:39
-#, fuzzy
 msgid "Tool no."
 msgstr "Narzędzie nr "
 
@@ -1237,12 +1233,10 @@ msgid "Start as window"
 msgstr "Otwórz jako okno"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:74
-#, fuzzy
 msgid "X Pos."
 msgstr "Pozycja X"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:75
-#, fuzzy
 msgid "Y Pos."
 msgstr "Pozycja Y"
 
@@ -1681,12 +1675,10 @@ msgid "Starting RPM"
 msgstr "Obroty początkowe"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:176
-#, fuzzy
 msgid "Spindle bar min"
 msgstr "Pasek wrzeciona min."
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:177
-#, fuzzy
 msgid "Spindle bar max"
 msgstr "Pasek wrzeciona max."
 
@@ -1715,7 +1707,6 @@ msgid "Use auto tool measurement"
 msgstr "Aktywny automatyczny pomiar narzędzia"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:184
-#, fuzzy
 msgid "Z Pos."
 msgstr "Pozycja Z"
 
@@ -1733,12 +1724,10 @@ msgid "<b>Probe Information</b>"
 msgstr "<b>Informacje o czujniku</b>"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:188
-#, fuzzy
 msgid "Search Vel."
 msgstr "Prędkość szukania"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:189
-#, fuzzy
 msgid "Probe Vel."
 msgstr "Prędkość czujnika"
 
@@ -1921,7 +1910,6 @@ msgstr ""
 "poprzednie linie nie będą sprzwdzane !"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:239
-#, fuzzy
 msgid ""
 "Machine or not the optional blocks of the program. If the button is pressed, "
 "the optional blocks will not be machined. The button will indicate this by a "
@@ -2008,7 +1996,6 @@ msgid "save the file using the original name"
 msgstr "Zapisz plik pod oryginalną nazwą"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:259
-#, fuzzy
 msgid "save the file with a new name"
 msgstr "zapisz plik jako ..."
 

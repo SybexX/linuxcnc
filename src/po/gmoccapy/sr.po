@@ -11,7 +11,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: emc-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2026-04-16 19:18+0200\n"
 "PO-Revision-Date: 2026-05-14 09:29+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Last-Translator: Hans Unzner <hansunzner@gmail.com>\n"
 "Language-Team: Serbian <https://hosted.weblate.org/projects/linuxcnc/"
 "gmocappy/sr/>\n"
 "Language: sr\n"
@@ -641,7 +641,6 @@ msgid "Conversion error in btn_set_value!"
 msgstr "Greška u pretvaranju na btn_set_value"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.py:4919
-#, fuzzy
 msgid "Please enter only numerical values. Values have not been applied"
 msgstr ""
 "Unesi samo numeričke vrednosti\n"
@@ -825,7 +824,6 @@ msgstr "uneti samo celi broj"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.py:5691
 #: src/emc/usr_intf/gmoccapy/gmoccapy.py:5716
-#, fuzzy
 msgid "Selected tool is already in spindle, no change needed."
 msgstr "Izabrani alat je već u vretenu, nema potrebe za izmenom!"
 
@@ -1066,7 +1064,6 @@ msgid "Undo"
 msgstr "poništi"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:33
-#, fuzzy
 msgid "Redo"
 msgstr ""
 "ponovo \n"
@@ -1107,7 +1104,6 @@ msgid "Information over the tool in spindle"
 msgstr "podatak o alatu u vretenu"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:39
-#, fuzzy
 msgid "Tool no."
 msgstr "Br. alata"
 
@@ -1116,12 +1112,10 @@ msgid "Diameter"
 msgstr "Prečnik"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:41
-#, fuzzy
 msgid "offset z"
 msgstr "Z odstup."
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:42
-#, fuzzy
 msgid "offset x"
 msgstr "X odstup."
 
@@ -1328,14 +1322,12 @@ msgid "<b>Jog Area</b>"
 msgstr "<b>Provozati</b>"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:90
-#, fuzzy
 msgid "Relative Color"
 msgstr ""
 "Boja ispisa\n"
 "rel. koordinata"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:91
-#, fuzzy
 msgid "Absolute Color"
 msgstr ""
 "Boja ispisa\n"
@@ -1617,7 +1609,6 @@ msgid "<b>File to load on start</b>"
 msgstr "<b>Učitati datoteku na početku</b>"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:158
-#, fuzzy
 msgid "Select user dir"
 msgstr "Izaberi koris.dir."
 
@@ -1743,14 +1734,12 @@ msgid "<b>Probe Information</b>"
 msgstr "<b>Informacije o \"Dodiru\"</b>"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:188
-#, fuzzy
 msgid "Search Vel."
 msgstr ""
 "Traži\n"
 "brzinu"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:189
-#, fuzzy
 msgid "Probe Vel."
 msgstr ""
 "Brzina \n"

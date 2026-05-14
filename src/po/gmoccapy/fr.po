@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: emc-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2026-04-16 19:18+0200\n"
 "PO-Revision-Date: 2026-05-14 09:29+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Last-Translator: Hans Unzner <hansunzner@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/linuxcnc/gmocappy/"
 "fr/>\n"
 "Language: fr\n"
@@ -1104,7 +1104,6 @@ msgid "Information over the tool in spindle"
 msgstr "Informations sur l'outil en broche"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:39
-#, fuzzy
 msgid "Tool no."
 msgstr "N° d'outil"
 
@@ -1248,12 +1247,10 @@ msgid "Start as window"
 msgstr "Démarrer dans une fenêtre"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:74
-#, fuzzy
 msgid "X Pos."
 msgstr "Pos. X"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:75
-#, fuzzy
 msgid "Y Pos."
 msgstr "Pos. Y"
 
@@ -1721,7 +1718,6 @@ msgid "Use auto tool measurement"
 msgstr "Utiliser mesure d'outil auto"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:184
-#, fuzzy
 msgid "Z Pos."
 msgstr "Pos. Z"
 
@@ -1743,7 +1739,6 @@ msgid "Search Vel."
 msgstr "Recherche Vit."
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:189
-#, fuzzy
 msgid "Probe Vel."
 msgstr "Vit. sonde"
 
@@ -1851,7 +1846,6 @@ msgid "enter auto mode to run programs"
 msgstr "entrer en mode auto pour lancer les programmes"
 
 #: src/emc/usr_intf/gmoccapy/gmoccapy.glade.h:221
-#, fuzzy
 msgid "show user tabs"
 msgstr "Voir onglets perso."
 
