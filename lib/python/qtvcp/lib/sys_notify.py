@@ -126,6 +126,7 @@ class Notification(object):
         self.hints = {}  # dict of various display hints
         self.actions = OrderedDict()  # actions names and their callbacks
         self.data = {}  # arbitrary user data
+        self.isVisible = False
 
     def show(self):
         try:
@@ -144,7 +145,7 @@ class Notification(object):
                                     )
 
             self.id = int(nid)
-
+            self.isVisible = True
             NOTIFICATIONS[self.id] = self
             return True
         except Exception as e:
@@ -152,6 +153,7 @@ class Notification(object):
 
     def close(self):
         """Ask the notification server to close the notification"""
+        self.isVisible = False
         try:
             if self.id != 0:
                 DBUS_IFACE.CloseNotification(self.id)
@@ -160,6 +162,7 @@ class Notification(object):
 
     def onClose(self, callback):
         """Set the callback called when the notification is closed"""
+        self.isVisible = False
         self._onNotificationClosed = callback
 
     def setUrgency(self, value):
