@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 std::atomic_int WithRoot::level;
 uid_t WithRoot::ruid, WithRoot::euid;
