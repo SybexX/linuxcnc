@@ -94,6 +94,10 @@ class Bridge(object):
         self.reload_display.pinValueChanged.connect(self.pinChanged)
         self.shutdown = QHAL.newpin('shutdown-in',QHAL.HAL_BIT, QHAL.HAL_IN)
         self.shutdown.pinValueChanged.connect(self.pinChanged)
+        self.ok = QHAL.newpin('ok-in',QHAL.HAL_BIT, QHAL.HAL_IN)
+        self.ok.pinValueChanged.connect(self.pinChanged)
+        self.cancel = QHAL.newpin('cancel-in',QHAL.HAL_BIT, QHAL.HAL_IN)
+        self.cancel.pinValueChanged.connect(self.pinChanged)
 
         if not self.INFO.MDI_COMMAND_DICT is None:
             for i in self.INFO.MDI_COMMAND_DICT:
@@ -216,6 +220,16 @@ class Bridge(object):
         elif self.shutdown == pinObject:
             if bool(value):
                 self.writeMsg('request_shutdown')
+
+        elif self.ok == pinObject:
+            if bool(value):
+                self.writeMsg('request_ok', value)
+
+        elif self.cancel == pinObject:
+            if bool(value):
+                self.writeMsg('request_cancel', value)
+
+
 
         # catch all default
         else:
