@@ -154,6 +154,8 @@ class HandlerClass:
         STATUS.connect('cycle-start-request', lambda w, state :self.btn_start_clicked(state))
         STATUS.connect('cycle-pause-request', lambda w, state: self.btn_pause_clicked(state))
         STATUS.connect('macro-call-request', lambda w, name: self.request_macro_call(name))
+        STATUS.connect('ok-request', lambda w, state: self.dialog_ext_control(w,1,1))
+        STATUS.connect('cancel-request', lambda w, state: self.dialog_ext_control(w,1,0))
 
         txt1 = _translate("HandlerClass","Setup Tab")
         txt2 = _translate("HandlerClass","If you select a file with .html as a file ending, it will be shown here.")
@@ -2093,9 +2095,21 @@ class HandlerClass:
 
     def dialog_ext_control(self, pin, value, answer):
         if value:
-            if not self._dialog_message is None:
-                name = self._dialog_message.get('NAME')
-                STATUS.emit('dialog-update',{'NAME':name,'response':answer})
+            # search for a visible notification first
+            # and close it
+            chk = self.w._NOTICE.find_visible()
+            if not chk is None:
+                chk.close()
+                return
+
+            # search the registered dialogs for a match
+            dlist = self.w.getRegisteredDialogList()
+            for i in (dlist):
+                if i.isVisible():
+                    LOG.verbose('Found dialog',i.objectName())
+                    name = i.getIdName()
+                    STATUS.emit('dialog-update',{'NAME':name,'response':answer})
+                    return
 
     def log_version(self):
         if INFO.RIP_FLAG:
